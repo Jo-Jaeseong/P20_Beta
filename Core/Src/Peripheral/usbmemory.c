@@ -33,7 +33,6 @@ extern FATFS USBHFatFS;    /* File system object for USBH logical drive */
 extern FIL USBHFile;       /* File object for USBH */
 FRESULT USBret;
 int firstcall=1;
-char buffer[1024];
 
 extern USBH_HandleTypeDef hUsbHostFS;
 extern ApplicationTypeDef Appli_state;
