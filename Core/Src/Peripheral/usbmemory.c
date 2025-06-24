@@ -32,7 +32,6 @@ extern char USBHPath[4];   /* USBH logical drive path */
 extern FATFS USBHFatFS;    /* File system object for USBH logical drive */
 extern FIL USBHFile;       /* File object for USBH */
 FRESULT USBret;
-int firstcall=1;
 
 extern USBH_HandleTypeDef hUsbHostFS;
 extern ApplicationTypeDef Appli_state;
