@@ -133,6 +133,10 @@ unsigned char flashuserCount;
 #define	HEPAFILTER					232//char[2](숫자입력)
 #define	PLASMAASSY					234//char[2](숫자입력)
 
+#define	POWEROFF_DATA				238//char[1](숫자입력)
+
+unsigned char flash_ProcessPowerOffFlag;
+
 //RFID
 #define RFIDFLASHINDEX				239//int[1]	//RFIDflashIndex
 #define RFID_DATA					240//int[12]240~251//252~263//264~275//276~287//288~299
@@ -334,6 +338,7 @@ void Write_Flash(){
 	ucData[PLASMAASSY]=(int)(PlasmaAssy/100);
 	ucData[PLASMAASSY+1]=(int)(PlasmaAssy%100);
 
+	ucData[POWEROFF_DATA]=flash_ProcessPowerOffFlag;
 
 	/*공장 세팅*/
 	ucData[LOGINFLAG_DATA]=LoginFlag;
@@ -420,13 +425,13 @@ void Read_Flash(){
 	}
 
 	if(flash_SERIAL_NUMBER[0]==0){
-		sprintf(flash_SERIAL_NUMBER,"CBTP240401");
-	}
-	if(flash_DEPARTMENT_NAME[0]==0){
-		sprintf(flash_DEPARTMENT_NAME,"Clean-Hosp");
+		sprintf(flash_SERIAL_NUMBER,"CBTP250701");
 	}
 	if(flash_FACILITY_NAME[0]==0){
-		sprintf(flash_FACILITY_NAME,"DevlopPart");
+		sprintf(flash_FACILITY_NAME,"CBT");
+	}
+	if(flash_DEPARTMENT_NAME[0]==0){
+		sprintf(flash_DEPARTMENT_NAME,"CleanTeam");
 	}
 
 	/*절전 모드 세팅*/
@@ -629,7 +634,7 @@ void Read_Flash(){
 	//과수 기한 설정
 	expiry_date1=userdata[EXPIRY_DATE1_DATA];
 	if(expiry_date1==0){
-		expiry_date1=6;
+		expiry_date1=12;
 	}
 	expiry_date2=userdata[EXPIRY_DATE2_DATA];
 	if(expiry_date2==0){
@@ -691,7 +696,7 @@ void Read_Flash(){
 	HEPAFilter=(userdata[HEPAFILTER]*100)+(userdata[HEPAFILTER+1]);
 	PlasmaAssy=(userdata[PLASMAASSY]*100)+(userdata[PLASMAASSY+1]);
 
-
+	flash_ProcessPowerOffFlag=userdata[POWEROFF_DATA];
 
 	/*공장 세팅*///(3)
 	LoginFlag=userdata[LOGINFLAG_DATA];
@@ -904,13 +909,13 @@ void ShortCycle(){
 	CycleData[1][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
 	CycleData[1][1].Time=3;
 	CycleData[1][2].PartsSetting=VACUUMVALVE;
-	CycleData[1][2].Time=27;
+	CycleData[1][2].Time=28;
 	CycleData[1][3].PartsSetting=VACUUMVALVE+PRESSURE1;
 	CycleData[1][3].Time=60;
-	CycleData[1][4].PartsSetting=VENTVALVE;
-	CycleData[1][4].Time=4;
+	CycleData[1][4].PartsSetting=VENTVALVE+INJECTIONVALVE;
+	CycleData[1][4].Time=6;
 	CycleData[1][5].PartsSetting=NONE;
-	CycleData[1][5].Time=26;
+	CycleData[1][5].Time=23;
 	CycleData[1][6].PartsSetting=NONE;
 	CycleData[1][6].Time=30;
 	CycleData[1][7].PartsSetting=VACUUMVALVE;
@@ -919,13 +924,13 @@ void ShortCycle(){
 	CycleData[1][8].Time=30;
 	CycleData[1][9].PartsSetting=VACUUMVALVE;
 	CycleData[1][9].Time=50;
-	CycleData[1][10].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][10].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][10].Time=60;
-	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][11].Time=60;
-	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][12].Time=60;
-	CycleData[1][13].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][13].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][13].Time=60;
 	CycleData[1][14].PartsSetting=VACUUMVALVE+PERIPUMP+VAPORIZER;
 	CycleData[1][14].Time=40;
@@ -942,22 +947,22 @@ void ShortCycle(){
 	CycleData[2][5].PartsSetting=VAPORIZER;
 	CycleData[2][5].Time=30;
 	CycleData[2][6].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][6].Time=2;
+	CycleData[2][6].Time=1;
 	CycleData[2][7].PartsSetting=VAPORIZER;
-	CycleData[2][7].Time=28;
-	CycleData[2][8].PartsSetting=VAPORIZER;
-	CycleData[2][8].Time=30;
-	CycleData[2][9].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][9].Time=4;
+	CycleData[2][7].Time=54;
+	CycleData[2][8].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[2][8].Time=5;
+	CycleData[2][9].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[2][9].Time=6;
 	CycleData[2][10].PartsSetting=VAPORIZER;
-	CycleData[2][10].Time=26;
+	CycleData[2][10].Time=24;
 	CycleData[2][11].PartsSetting=VAPORIZER;
 	CycleData[2][11].Time=30;
-	CycleData[2][12].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[2][12].PartsSetting=VAPORIZER;
 	CycleData[2][12].Time=30;
-	CycleData[2][13].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[2][13].PartsSetting=VAPORIZER;
 	CycleData[2][13].Time=26;
-	CycleData[2][14].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
+	CycleData[2][14].PartsSetting==VAPORIZER;
 	CycleData[2][14].Time=4;
 
 	CycleData[3][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE+VAPORIZER;
@@ -992,22 +997,22 @@ void ShortCycle(){
 	CycleData[4][5].PartsSetting=VAPORIZER;
 	CycleData[4][5].Time=30;
 	CycleData[4][6].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][6].Time=2;
+	CycleData[4][6].Time=1;
 	CycleData[4][7].PartsSetting=VAPORIZER;
-	CycleData[4][7].Time=28;
-	CycleData[4][8].PartsSetting=VAPORIZER;
-	CycleData[4][8].Time=30;
-	CycleData[4][9].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][9].Time=4;
+	CycleData[4][7].Time=54;
+	CycleData[4][8].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[4][8].Time=5;
+	CycleData[4][9].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[4][9].Time=6;
 	CycleData[4][10].PartsSetting=VAPORIZER;
-	CycleData[4][10].Time=26;
+	CycleData[4][10].Time=24;
 	CycleData[4][11].PartsSetting=VAPORIZER;
 	CycleData[4][11].Time=30;
-	CycleData[4][12].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[4][12].PartsSetting=VAPORIZER;
 	CycleData[4][12].Time=30;
-	CycleData[4][13].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[4][13].PartsSetting=VAPORIZER;
 	CycleData[4][13].Time=26;
-	CycleData[4][14].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
+	CycleData[4][14].PartsSetting==VAPORIZER;
 	CycleData[4][14].Time=4;
 
 	CycleData[5][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
@@ -1033,15 +1038,15 @@ void ShortCycle(){
 
 
 	CycleData[6][1].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[6][1].Time=6;
+	CycleData[6][1].Time=8;
 	CycleData[6][2].PartsSetting=VACUUMVALVE;
-	CycleData[6][2].Time=48;
+	CycleData[6][2].Time=44;
 	CycleData[6][3].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[6][3].Time=5;
+	CycleData[6][3].Time=7;
 	CycleData[6][4].PartsSetting=VACUUMVALVE;
-	CycleData[6][4].Time=49;
+	CycleData[6][4].Time=45;
 	CycleData[6][5].PartsSetting=VENTVALVE;
-	CycleData[6][5].Time=11;
+	CycleData[6][5].Time=15;
 	CycleData[6][6].PartsSetting=NONE;
 	CycleData[6][6].Time=1;
 }
@@ -1053,28 +1058,28 @@ void StandardCycle(){
 	CycleData[1][2].PartsSetting=VACUUMVALVE;
 	CycleData[1][2].Time=52;
 	CycleData[1][3].PartsSetting=VENTVALVE;
-	CycleData[1][3].Time=3;
+	CycleData[1][3].Time=6;
 	CycleData[1][4].PartsSetting=VACUUMVALVE;
-	CycleData[1][4].Time=32;
+	CycleData[1][4].Time=29;
 	CycleData[1][5].PartsSetting=VACUUMVALVE+PRESSURE1;
 	CycleData[1][5].Time=60;
-	CycleData[1][6].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[1][6].Time=4;
+	CycleData[1][6].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA;
+	CycleData[1][6].Time=6;
 	CycleData[1][7].PartsSetting=NONE;
-	CycleData[1][7].Time=56;
+	CycleData[1][7].Time=24;
 	CycleData[1][8].PartsSetting=NONE;
-	CycleData[1][8].Time=60;
+	CycleData[1][8].Time=30;
 	CycleData[1][9].PartsSetting=VACUUMVALVE;
-	CycleData[1][9].Time=50;
+	CycleData[1][9].Time=60;
 	CycleData[1][10].PartsSetting=VACUUMVALVE;
 	CycleData[1][10].Time=60;
 	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2;
-	CycleData[1][11].Time=60;
-	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][11].Time=50;
+	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][12].Time=60;
-	CycleData[1][13].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][13].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][13].Time=60;
-	CycleData[1][14].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][14].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][14].Time=60;
 	CycleData[1][15].PartsSetting=VACUUMVALVE+PERIPUMP+VAPORIZER;
 	CycleData[1][15].Time=40;
@@ -1087,29 +1092,29 @@ void StandardCycle(){
 	CycleData[2][3].PartsSetting=VAPORIZER+PRESSURE3;
 	CycleData[2][3].Time=60;
 	CycleData[2][4].PartsSetting=VAPORIZER;
-	CycleData[2][4].Time=60;
+	CycleData[2][4].Time=30;
 	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][5].Time=2;
+	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=VAPORIZER;
-	CycleData[2][6].Time=28;
-	CycleData[2][7].PartsSetting=VAPORIZER;
-	CycleData[2][7].Time=60;
-	CycleData[2][8].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][8].Time=4;
+	CycleData[2][6].Time=84;
+	CycleData[2][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[2][7].Time=5;
+	CycleData[2][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[2][8].Time=2;
 	CycleData[2][9].PartsSetting=VAPORIZER;
-	CycleData[2][9].Time=26;
-	CycleData[2][10].PartsSetting=VAPORIZER;
-	CycleData[2][10].Time=30;
+	CycleData[2][9].Time=118;
+	CycleData[2][10].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
+	CycleData[2][10].Time=5;
 	CycleData[2][11].PartsSetting=VAPORIZER;
-	CycleData[2][11].Time=30;
+	CycleData[2][11].Time=18;
 	CycleData[2][12].PartsSetting=VAPORIZER;
-	CycleData[2][12].Time=30;
-	CycleData[2][13].PartsSetting=VAPORIZER;
-	CycleData[2][13].Time=56;
+	CycleData[2][12].Time=60;
+	CycleData[2][13].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[2][13].Time=30;
 	CycleData[2][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][14].Time=60;
+	CycleData[2][14].Time=61;
 	CycleData[2][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][15].Time=4;
+	CycleData[2][15].Time=6;
 
 	CycleData[3][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE+VAPORIZER;
 	CycleData[3][1].Time=3;
@@ -1128,9 +1133,9 @@ void StandardCycle(){
 	CycleData[3][8].PartsSetting=VACUUMVALVE+VAPORIZER;
 	CycleData[3][8].Time=30;
 	CycleData[3][9].PartsSetting=VACUUMVALVE+VAPORIZER+PRESSURE2;
-	CycleData[3][9].Time=50;
+	CycleData[3][9].Time=60;
 	CycleData[3][10].PartsSetting=VACUUMVALVE+PERIPUMP+VAPORIZER;
-	CycleData[3][10].Time=40;
+	CycleData[3][10].Time=30;
 
 	CycleData[4][1].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][1].Time=1;
@@ -1139,29 +1144,29 @@ void StandardCycle(){
 	CycleData[4][3].PartsSetting=VAPORIZER+PRESSURE3;
 	CycleData[4][3].Time=60;
 	CycleData[4][4].PartsSetting=VAPORIZER;
-	CycleData[4][4].Time=60;
+	CycleData[4][4].Time=30;
 	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][5].Time=2;
+	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=VAPORIZER;
-	CycleData[4][6].Time=28;
-	CycleData[4][7].PartsSetting=VAPORIZER;
-	CycleData[4][7].Time=60;
-	CycleData[4][8].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][8].Time=4;
+	CycleData[4][6].Time=84;
+	CycleData[4][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[4][7].Time=5;
+	CycleData[4][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[4][8].Time=2;
 	CycleData[4][9].PartsSetting=VAPORIZER;
-	CycleData[4][9].Time=26;
-	CycleData[4][10].PartsSetting=VAPORIZER;
-	CycleData[4][10].Time=30;
+	CycleData[4][9].Time=118;
+	CycleData[4][10].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
+	CycleData[4][10].Time=5;
 	CycleData[4][11].PartsSetting=VAPORIZER;
-	CycleData[4][11].Time=30;
+	CycleData[4][11].Time=18;
 	CycleData[4][12].PartsSetting=VAPORIZER;
-	CycleData[4][12].Time=30;
-	CycleData[4][13].PartsSetting=VAPORIZER;
-	CycleData[4][13].Time=56;
+	CycleData[4][12].Time=60;
+	CycleData[4][13].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[4][13].Time=30;
 	CycleData[4][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][14].Time=60;
+	CycleData[4][14].Time=61;
 	CycleData[4][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][15].Time=4;
+	CycleData[4][15].Time=6;
 
 	CycleData[5][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
 	CycleData[5][1].Time=3;
@@ -1180,21 +1185,20 @@ void StandardCycle(){
 	CycleData[5][8].PartsSetting=VACUUMVALVE;
 	CycleData[5][8].Time=30;
 	CycleData[5][9].PartsSetting=VACUUMVALVE;
-	CycleData[5][9].Time=50;
+	CycleData[5][9].Time=60;
 	CycleData[5][10].PartsSetting=VACUUMVALVE;
-	CycleData[5][10].Time=40;
+	CycleData[5][10].Time=30;
 
-
-	CycleData[6][1].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[6][1].Time=6;
+	CycleData[6][1].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA;
+	CycleData[6][1].Time=8;
 	CycleData[6][2].PartsSetting=VACUUMVALVE;
-	CycleData[6][2].Time=78;
+	CycleData[6][2].Time=74;
 	CycleData[6][3].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[6][3].Time=6;
+	CycleData[6][3].Time=7;
 	CycleData[6][4].PartsSetting=VACUUMVALVE;
-	CycleData[6][4].Time=78;
+	CycleData[6][4].Time=75;
 	CycleData[6][5].PartsSetting=VENTVALVE;
-	CycleData[6][5].Time=11;
+	CycleData[6][5].Time=15;
 	CycleData[6][6].PartsSetting=NONE;
 	CycleData[6][6].Time=1;
 }
@@ -1204,29 +1208,29 @@ void AdvancedCycle(){
 	CycleData[1][1].Time=3;
 	CycleData[1][2].PartsSetting=VACUUMVALVE;
 	CycleData[1][2].Time=60;
-	CycleData[1][3].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[1][3].Time=4;
-	CycleData[1][4].PartsSetting=VACUUMVALVE+PRESSURE1;
-	CycleData[1][4].Time=90;
-	CycleData[1][5].PartsSetting=NONE;
-	CycleData[1][5].Time=143;
-	CycleData[1][6].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[1][6].Time=4;
-	CycleData[1][7].PartsSetting=NONE;
-	CycleData[1][7].Time=56;
+	CycleData[1][3].PartsSetting=VENTVALVE;
+	CycleData[1][3].Time=6;
+	CycleData[1][4].PartsSetting=VACUUMVALVE;
+	CycleData[1][4].Time=79;
+	CycleData[1][5].PartsSetting=VENTVALVE;
+	CycleData[1][5].Time=6;
+	CycleData[1][6].PartsSetting=VACUUMVALVE+PRESSURE1;
+	CycleData[1][6].Time=120;
+	CycleData[1][7].PartsSetting=VENTVALVE+INJECTIONVALVE;
+	CycleData[1][7].Time=6;
 	CycleData[1][8].PartsSetting=NONE;
-	CycleData[1][8].Time=90;
-	CycleData[1][9].PartsSetting=VACUUMVALVE;
-	CycleData[1][9].Time=50;
+	CycleData[1][8].Time=80;
+	CycleData[1][9].PartsSetting=NONE;
+	CycleData[1][9].Time=120;
 	CycleData[1][10].PartsSetting=VACUUMVALVE;
-	CycleData[1][10].Time=60;
-	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2;
-	CycleData[1][11].Time=60;
-	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][10].Time=120;
+	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
+	CycleData[1][11].Time=80;
+	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][12].Time=60;
-	CycleData[1][13].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][13].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][13].Time=60;
-	CycleData[1][14].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][14].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][14].Time=60;
 	CycleData[1][15].PartsSetting=VACUUMVALVE+PERIPUMP+VAPORIZER;
 	CycleData[1][15].Time=40;
@@ -1241,27 +1245,27 @@ void AdvancedCycle(){
 	CycleData[2][4].PartsSetting=VAPORIZER;
 	CycleData[2][4].Time=60;
 	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][5].Time=2;
+	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=VAPORIZER;
-	CycleData[2][6].Time=28;
-	CycleData[2][7].PartsSetting=VAPORIZER;
-	CycleData[2][7].Time=60;
-	CycleData[2][8].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][8].Time=4;
+	CycleData[2][6].Time=84;
+	CycleData[2][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[2][7].Time=5;
+	CycleData[2][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[2][8].Time=2;
 	CycleData[2][9].PartsSetting=VAPORIZER;
-	CycleData[2][9].Time=86;
-	CycleData[2][10].PartsSetting=VAPORIZER;
-	CycleData[2][10].Time=120;
-	CycleData[2][11].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][11].Time=80;
+	CycleData[2][9].Time=149;
+	CycleData[2][10].PartsSetting=VENTVALVE+INJECTIONVALVE+VAPORIZER;
+	CycleData[2][10].Time=4;
+	CycleData[2][11].PartsSetting=VAPORIZER;
+	CycleData[2][11].Time=52;
 	CycleData[2][12].PartsSetting=VAPORIZER;
-	CycleData[2][12].Time=82;
-	CycleData[2][13].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][13].Time=4;
+	CycleData[2][12].Time=80;
+	CycleData[2][13].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[2][13].Time=37;
 	CycleData[2][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][14].Time=40;
+	CycleData[2][14].Time=60;
 	CycleData[2][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][15].Time=4;
+	CycleData[2][15].Time=6;
 
 	CycleData[3][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE+VAPORIZER;
 	CycleData[3][1].Time=3;
@@ -1280,9 +1284,9 @@ void AdvancedCycle(){
 	CycleData[3][8].PartsSetting=VACUUMVALVE+VAPORIZER;
 	CycleData[3][8].Time=30;
 	CycleData[3][9].PartsSetting=VACUUMVALVE+VAPORIZER+PRESSURE2;
-	CycleData[3][9].Time=50;
+	CycleData[3][9].Time=60;
 	CycleData[3][10].PartsSetting=VACUUMVALVE+PERIPUMP+VAPORIZER;
-	CycleData[3][10].Time=40;
+	CycleData[3][10].Time=30;
 
 	CycleData[4][1].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][1].Time=1;
@@ -1293,27 +1297,27 @@ void AdvancedCycle(){
 	CycleData[4][4].PartsSetting=VAPORIZER;
 	CycleData[4][4].Time=60;
 	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][5].Time=2;
+	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=VAPORIZER;
-	CycleData[4][6].Time=28;
-	CycleData[4][7].PartsSetting=VAPORIZER;
-	CycleData[4][7].Time=60;
-	CycleData[4][8].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][8].Time=4;
+	CycleData[4][6].Time=84;
+	CycleData[4][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[4][7].Time=5;
+	CycleData[4][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[4][8].Time=2;
 	CycleData[4][9].PartsSetting=VAPORIZER;
-	CycleData[4][9].Time=86;
-	CycleData[4][10].PartsSetting=VAPORIZER;
-	CycleData[4][10].Time=120;
-	CycleData[4][11].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][11].Time=80;
+	CycleData[4][9].Time=149;
+	CycleData[4][10].PartsSetting=VENTVALVE+INJECTIONVALVE+VAPORIZER;
+	CycleData[4][10].Time=4;
+	CycleData[4][11].PartsSetting=VAPORIZER;
+	CycleData[4][11].Time=52;
 	CycleData[4][12].PartsSetting=VAPORIZER;
-	CycleData[4][12].Time=82;
-	CycleData[4][13].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][13].Time=4;
+	CycleData[4][12].Time=80;
+	CycleData[4][13].PartsSetting=VACUUMVALVE+VAPORIZER;
+	CycleData[4][13].Time=37;
 	CycleData[4][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][14].Time=40;
+	CycleData[4][14].Time=60;
 	CycleData[4][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][15].Time=4;
+	CycleData[4][15].Time=6;
 
 	CycleData[5][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
 	CycleData[5][1].Time=3;
@@ -1332,21 +1336,21 @@ void AdvancedCycle(){
 	CycleData[5][8].PartsSetting=VACUUMVALVE;
 	CycleData[5][8].Time=30;
 	CycleData[5][9].PartsSetting=VACUUMVALVE;
-	CycleData[5][9].Time=50;
+	CycleData[5][9].Time=60;
 	CycleData[5][10].PartsSetting=VACUUMVALVE;
-	CycleData[5][10].Time=40;
+	CycleData[5][10].Time=30;
 
 
-	CycleData[6][1].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[6][1].Time=6;
+	CycleData[6][1].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA;
+	CycleData[6][1].Time=8;
 	CycleData[6][2].PartsSetting=VACUUMVALVE;
-	CycleData[6][2].Time=107;
+	CycleData[6][2].Time=104;
 	CycleData[6][3].PartsSetting=VENTVALVE+PLASMA;
-	CycleData[6][3].Time=6;
+	CycleData[6][3].Time=7;
 	CycleData[6][4].PartsSetting=VACUUMVALVE;
-	CycleData[6][4].Time=107;
+	CycleData[6][4].Time=105;
 	CycleData[6][5].PartsSetting=VENTVALVE;
-	CycleData[6][5].Time=13;
+	CycleData[6][5].Time=15;
 	CycleData[6][6].PartsSetting=NONE;
 	CycleData[6][6].Time=1;
 }

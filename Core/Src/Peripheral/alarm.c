@@ -199,7 +199,8 @@ int Alarm_Check(){
 
 int PreAlarm_Check(){
 	//devicePreAlarm
-	if((CurrentRFIDData.volume>=2)&&(CurrentRFIDData.volume<=10)){
+	devicePreAlarm[0]=0;
+	if(CurrentRFIDData.volume<8&&CurrentRFIDData.volume>=2){
 		devicePreAlarm[1]=1;
 	}
 	else{

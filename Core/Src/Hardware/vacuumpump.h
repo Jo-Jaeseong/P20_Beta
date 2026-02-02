@@ -8,6 +8,8 @@
 #ifndef SRC_HARDWARE_VACUUMPUMP_H_
 #define SRC_HARDWARE_VACUUMPUMP_H_
 
+extern int VacuumOnOff;
+
 void VacuumPump(int onoff);
 
 #endif /* SRC_HARDWARE_VACUUM_PUMP_H_ */

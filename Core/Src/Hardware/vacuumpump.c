@@ -9,9 +9,11 @@
 #include "hardware.h"
 
 // ------------------- Variables -------------------
+int VacuumOnOff=0;
 
 // ------------------- Functions -------------------
 void VacuumPump(int onoff){
 	AC4(onoff);
+	VacuumOnOff=onoff;
 }
 

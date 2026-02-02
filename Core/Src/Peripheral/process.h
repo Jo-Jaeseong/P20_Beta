@@ -76,6 +76,8 @@ extern int ValveTestResult[4];
 extern int TestResult[4];
 
 
+extern int VacuumCheck;
+
 void loop();
 
 void DeliSecondProcess(void);

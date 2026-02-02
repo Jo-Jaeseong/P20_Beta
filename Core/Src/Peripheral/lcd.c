@@ -51,6 +51,7 @@ void InitLCD(void){	//LCD 초기화
 	//Display21page();
 	//DisplayPage(21);
 	ReadLCD();
+	HAL_Delay(100);
 	SetRTCFromLCD();
 	HAL_Delay(100);
     ReadLCD();
@@ -556,23 +557,29 @@ void DoActionButton(int key){	//0000 XXXX(key)
     	case 0:
             break;
         case 1: // goto login page
-        	if(LoginFlag==1){
-        		if(AutoLoginFlag==1){// 자동로그인
-        			CurrentUser=AutoLoginID;
-        			DisplayIcon(0x02, 0x30, 1);
-            		Display02page();
-            		DisplayPage(LCD_CYCLESELECT_PAGE);
-        		}
-        		else{
-        			Display61page();
-					DisplayPage(LCD_LOGIN_PAGE);
-        		}
+        	if(Pressure<DoorOpenPressure){
+        		DisplayPage(LCD_VACUUM_MESSAGE_PAGE);
         	}
         	else{
-        		DisplayIcon(0x02, 0x30, 0);
-        		Display02page();
-        		DisplayPage(LCD_CYCLESELECT_PAGE);
+            	if(LoginFlag==1){
+            		if(AutoLoginFlag==1){// 자동로그인
+            			CurrentUser=AutoLoginID;
+            			DisplayIcon(0x02, 0x30, 1);
+                		Display02page();
+                		DisplayPage(LCD_CYCLESELECT_PAGE);
+            		}
+            		else{
+            			Display61page();
+    					DisplayPage(LCD_LOGIN_PAGE);
+            		}
+            	}
+            	else{
+            		DisplayIcon(0x02, 0x30, 0);
+            		Display02page();
+            		DisplayPage(LCD_CYCLESELECT_PAGE);
+            	}
         	}
+        	flash_ProcessPowerOffFlag=0;
         	//fortest
 /*
         	DisplayPage(LCD_MONITOR_PAGE);
@@ -783,6 +790,35 @@ void DoActionButton(int key){	//0000 XXXX(key)
 			DisplayPage(beforepage);
 			break;
 
+        case 0x71://
+        	VacuumCheck=1;
+        	DoorOpenVentFlag=1;
+			DoorOpenVentCnt=30;
+			//여기
+			//진공 상태에 따라 시간 차등 분배 구현 예정
+			DisplayPage(LCD_LOADING_PAGE);
+			break;
+
+        case 0x72://
+        	if(LoginFlag==1){
+				if(AutoLoginFlag==1){// 자동로그인
+					CurrentUser=AutoLoginID;
+					DisplayIcon(0x02, 0x30, 1);
+					Display02page();
+					DisplayPage(LCD_CYCLESELECT_PAGE);
+				}
+				else{
+					Display61page();
+					DisplayPage(LCD_LOGIN_PAGE);
+				}
+			}
+			else{
+				DisplayIcon(0x02, 0x30, 0);
+				Display02page();
+				DisplayPage(LCD_CYCLESELECT_PAGE);
+			}
+			break;
+
         case 0x99:
         	DisplayPage(LCD_FACTORY_PROCESSSETTING_PAGE);
         	Inithardware();
@@ -795,7 +831,7 @@ void DoActionButton(int key){	//0000 XXXX(key)
 
         case 0xFE:	//도어 오픈 YES
         	DoorOpenVentFlag=1;
-			DoorOpenVentCnt=15;
+			DoorOpenVentCnt=30;
 			//여기
 			//진공 상태에 따라 시간 차등 분배 구현 예정
 			DisplayPage(LCD_LOADING_PAGE);
@@ -812,8 +848,6 @@ void DoActionButton(int key){	//0000 XXXX(key)
         		}
         	}
         	break;
-
-
     }
     ReadLCD();
 }
@@ -1139,6 +1173,7 @@ void LCD_02(int index, int value){	//input Value
 			switch(value) {
 				case 0x01 :
 					//SHORT MODE
+					DisplayPage(LCD_LOADING_PAGE);
 					CycleName=SHORT;
 					Read_Flash();
 					ProcessNum=1;
@@ -1159,6 +1194,7 @@ void LCD_02(int index, int value){	//input Value
 					break;
 				case 0x02 :
 					//STANDARD MODE
+					DisplayPage(LCD_LOADING_PAGE);
 					CycleName=STANDARD;
 					Read_Flash();
 					ProcessNum=1;
@@ -1179,6 +1215,7 @@ void LCD_02(int index, int value){	//input Value
 					break;
 				case 0x03 :
 					//ADVANCED MODE
+					DisplayPage(LCD_LOADING_PAGE);
 					CycleName=ADVANCED;
 					Read_Flash();
 					ProcessNum=1;
@@ -1256,7 +1293,22 @@ void LCD_04(int index, int value){	//input Value
 						DisplayPage(LCD_SLEEPMODE_MESSAGE_PAGE);
 					}
 					else{
-						RFIDCheck();
+						InitRFID();
+						ReadRFID();
+						if(checkret==-2){//11.04추가
+							/*
+							for(int i=0;i<3;i++){
+								ReadRFID();
+								if(checkret==1){
+									break;
+								}
+							}
+							*/
+						}
+						else if(checkret==1){
+							Write_Flash();
+						}
+						DisplaySterilantData();
 						if(Alarm_Check()==0){
 							if(PreAlarm_Check()==0){
 								StartProcess();
@@ -1524,7 +1576,9 @@ void LCD_14(int index, int value){	//input Value
 						devicePreAlarm[4]=0;
 					}
         			else{
-            			DisplayPage(LCD_STANDBY_PAGE);
+						StartProcess();
+						DisplayPage(LCD_RUNNING_PAGE);
+            			//DisplayPage(LCD_STANDBY_PAGE);
         			}
 					break;
 			}
@@ -2883,11 +2937,17 @@ void LCD_52(int index, int value){	//input Value
 
 				case 0x06 :
 					sprintf(flash_MODEL_NAME,"FN-P20    ");
-					sprintf(flash_SERIAL_NUMBER,"CBTP240401");
-					sprintf(flash_DEPARTMENT_NAME,"Clean-Hosp");
-					sprintf(flash_FACILITY_NAME,"DevlopPart");
+					sprintf(flash_SERIAL_NUMBER,"CBTP250701");
+					sprintf(flash_FACILITY_NAME,"CBT");
+					sprintf(flash_DEPARTMENT_NAME,"CleanTeam");
 					sprintf(flash_SOFTWARE_VERSION,"1.0.0     ");
 					LoadSetting();
+					break;
+
+				case 0x07 :
+					//여기 수정중
+					totalCount=0;
+                    dailyCount=0;
 					break;
 			}
 			break;
@@ -3349,14 +3409,14 @@ void LCD_60(int index, int value){	//input Value
 					break;
 				case 0x04 :
 					if(!HAL_GPIO_ReadPin(GPIO_OUT14_GPIO_Port, GPIO_OUT14_Pin)){
-						AC4(0);
+						VacuumPump(0);
 						if(currentpage==LCD_ADMIN_PARTSTEST_PAGE){
 							Fan(0);
 						}
 		        		//DisplayIcon(0x6A,0x40,0);
 					}
 					else{
-						AC4(1);
+						VacuumPump(1);
 						if(currentpage==LCD_ADMIN_PARTSTEST_PAGE){
 							Fan(1);
 						}
@@ -4186,9 +4246,13 @@ void Display12page(){
 void Display21page(){
 	DisplayPage10Char(0x51,0x30,flash_MODEL_NAME);
 	DisplayPage10Char(0x51,0x40,flash_SERIAL_NUMBER);
-	DisplayPage10Char(0x51,0x50,flash_DEPARTMENT_NAME);
-	DisplayPage10Char(0x51,0x60,flash_FACILITY_NAME);
+	DisplayPage10Char(0x51,0x50,flash_FACILITY_NAME);
+	DisplayPage10Char(0x51,0x60,flash_DEPARTMENT_NAME);
 	DisplayPage10Char(0x51,0x70,flash_SOFTWARE_VERSION);
+
+	DisplayPageValue(0x41,0x40,CarbonFilter);
+	DisplayPageValue(0x41,0x50,HEPAFilter);
+	DisplayPageValue(0x41,0x60,PlasmaAssy);
 
 	GetTime();
 	//데일리 카운트 초기화
@@ -4638,8 +4702,8 @@ void Display51page(){
 
 	DisplayPage10Char(0x51,0x30,flash_MODEL_NAME);
 	DisplayPage10Char(0x51,0x40,flash_SERIAL_NUMBER);
-	DisplayPage10Char(0x51,0x50,flash_DEPARTMENT_NAME);
-	DisplayPage10Char(0x51,0x60,flash_FACILITY_NAME);
+	DisplayPage10Char(0x51,0x50,flash_FACILITY_NAME);
+	DisplayPage10Char(0x51,0x60,flash_DEPARTMENT_NAME);
 	DisplayPage10Char(0x51,0x70,flash_SOFTWARE_VERSION);
 }
 
@@ -4917,32 +4981,32 @@ void DisplaySterilantData(){
 
 
 		memset(msg, 0, 10);
-		sprintf(msg,"%-3d       ",CurrentRFIDData.volume);
+		sprintf(msg,"%-2d(%-2d)    ",CurrentRFIDData.volume/2,CurrentRFIDData.volume);
 		DisplayPage10Char(0x22,0x40,msg);
 		//DisplayPageValue(0x22,0x40,CurrentRFIDData.volume);
 
-		if(CurrentRFIDData.volume>=100){
+		if(CurrentRFIDData.volume>=60){
 			DisplayIcon(0x22,0x50,1);
 		}
-		else if(CurrentRFIDData.volume<100&&CurrentRFIDData.volume>=88){
+		else if(CurrentRFIDData.volume<60&&CurrentRFIDData.volume>=44){
 			DisplayIcon(0x22,0x50,2);
 		}
-		else if(CurrentRFIDData.volume<88&&CurrentRFIDData.volume>=76){
+		else if(CurrentRFIDData.volume<44&&CurrentRFIDData.volume>=38){
 			DisplayIcon(0x22,0x50,3);
 		}
-		else if(CurrentRFIDData.volume<76&&CurrentRFIDData.volume>=52){
+		else if(CurrentRFIDData.volume<38&&CurrentRFIDData.volume>=26){
 			DisplayIcon(0x22,0x50,4);
 		}
-		else if(CurrentRFIDData.volume<52&&CurrentRFIDData.volume>=40){
+		else if(CurrentRFIDData.volume<26&&CurrentRFIDData.volume>=20){
 			DisplayIcon(0x22,0x50,5);
 		}
-		else if(CurrentRFIDData.volume<40&&CurrentRFIDData.volume>=16){
+		else if(CurrentRFIDData.volume<20&&CurrentRFIDData.volume>=8){
 			DisplayIcon(0x22,0x50,6);
 		}
-		else if(CurrentRFIDData.volume<16&&CurrentRFIDData.volume>=4){
+		else if(CurrentRFIDData.volume<8&&CurrentRFIDData.volume>=2){
 			DisplayIcon(0x22,0x50,7);
 		}
-		else if(CurrentRFIDData.volume<4){
+		else if(CurrentRFIDData.volume<2){
 			DisplayIcon(0x22,0x50,8);
 		}
 	}
@@ -4963,7 +5027,7 @@ void DisplaySterilantData(){
 		DisplayPage10Char(0x22,0x30,msg);
 
 		memset(msg, 0, 10);
-		sprintf(msg,"%-3d       ",CurrentRFIDData.volume);
+		sprintf(msg,"%-2d(%-2d)    ",CurrentRFIDData.volume/2,CurrentRFIDData.volume);
 		DisplayPage10Char(0x22,0x40,msg);
 		//DisplayPageValue(0x22,0x40,CurrentRFIDData.volume);
 
@@ -4986,7 +5050,7 @@ void DisplaySterilantData(){
 		DisplayPage10Char(0x22,0x30,msg);
 
 		memset(msg, 0, 10);
-		sprintf(msg,"%-3d       ",CurrentRFIDData.volume);
+		sprintf(msg,"%-2d(%-2d)    ",CurrentRFIDData.volume/2,CurrentRFIDData.volume);
 		DisplayPage10Char(0x22,0x40,msg);
 		//DisplayPageValue(0x22,0x40,CurrentRFIDData.volume);
 
@@ -4998,7 +5062,7 @@ void DisplaySterilantData(){
 		DisplayPage10Char(0x22,0x30,"No Data   ");
 		DisplayPage10Char(0x22,0x40,"0         ");
 		//DisplayPageValue(0x22,0x40,CurrentRFIDData.volume);
-
+		CurrentRFIDData.volume=0;
 		DisplayIcon(0x22,0x50,0);
 	}
 	//과수량 표기 숫자
@@ -5091,26 +5155,43 @@ void ReadInforDataFromLCD(){
     HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
     HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
 
-	for(int i=0;i<10;i++){
-		flash_SERIAL_NUMBER[i]=LCD_rx_data[i+7];
-	}
-
-    get_lcd_data[5]=0x50;//DEPARTMENT
+    memset(flash_FACILITY_NAME,0,10);
+    for(int i=0;i<10;i++){
+    	if(LCD_rx_data[i+7]==0xFF){
+    		break;
+    	}
+    	else{
+    		flash_SERIAL_NUMBER[i]=LCD_rx_data[i+7];
+    	}
+    }
+	memset(LCD_rx_data, 0, 30);
+    get_lcd_data[5]=0x50;//FACILITY
 	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
 	HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
 
-	for(int i=0;i<10;i++){
-		flash_DEPARTMENT_NAME[i]=LCD_rx_data[i+7];
-	}
-
-    get_lcd_data[5]=0x60;//FACILITY
+	memset(flash_FACILITY_NAME,0,10);
+    for(int i=0;i<10;i++){
+    	if(LCD_rx_data[i+7]==0xFF){
+    		break;
+    	}
+    	else{
+    		flash_FACILITY_NAME[i]=LCD_rx_data[i+7];
+    	}
+    }
+	memset(LCD_rx_data, 0, 30);
+    get_lcd_data[5]=0x60;//DEPARTMENT
 	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
 	HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
 
-	for(int i=0;i<10;i++){
-		flash_FACILITY_NAME[i]=LCD_rx_data[i+7];
-	}
-
+	memset(flash_DEPARTMENT_NAME,0,10);
+    for(int i=0;i<10;i++){
+    	if(LCD_rx_data[i+7]==0xFF){
+    		break;
+    	}
+    	else{
+    		flash_DEPARTMENT_NAME[i]=LCD_rx_data[i+7];
+    	}
+    }
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();

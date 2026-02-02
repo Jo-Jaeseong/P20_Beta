@@ -100,6 +100,7 @@
 
 #define LCD_FACTORY_CONTROLTEST_PAGE					60
 
+#define LCD_VACUUM_MESSAGE_PAGE							70
 #define LCD_ADMIN_MESSAGE_PAGE							71
 #define LCD_FACTORY_MESSAGE_PAGE						72
 #define LCD_WRONG_PW_MESSAGE_PAGE						73
@@ -114,6 +115,7 @@
 #define LCD_LOADING_PAGE								100
 #define LCD_SLEEPMODE_PAGE								101
 #define LCD_SLEEPMODE_RESERVATION_PAGE					102
+#define LCD_POWEROFFCHECK_PAGE							103
 
 extern int currentpage;
 extern int beforepage;

@@ -163,7 +163,7 @@ void printInformation(){
 			printmsg(pinrtdata);
 
 			memset(pinrtdata,0,40);
-			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume);
+			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume/2);
 			printmsg(pinrtdata);
 		}
 		else{
@@ -172,7 +172,7 @@ void printInformation(){
 			printmsg(pinrtdata);
 
 			memset(pinrtdata,0,40);
-			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume);
+			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume/2);
 			printmsg(pinrtdata);
 		}
 
@@ -218,7 +218,7 @@ void printSterilant(){
 			printmsg(pinrtdata);
 
 			memset(pinrtdata,0,40);
-			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume);
+			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume/2);
 			printmsg(pinrtdata);
 		}
 		else{
@@ -227,7 +227,7 @@ void printSterilant(){
 			printmsg(pinrtdata);
 
 			memset(pinrtdata,0,40);
-			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume);
+			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume/2);
 			printmsg(pinrtdata);
 		}
 
@@ -1038,7 +1038,7 @@ void CyclePrint(){
 			printmsg(pinrtdata);
 
 			memset(pinrtdata,0,40);
-			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume);
+			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume/2);
 			printmsg(pinrtdata);
 		}
 		else{
@@ -1047,7 +1047,7 @@ void CyclePrint(){
 			printmsg(pinrtdata);
 
 			memset(pinrtdata,0,40);
-			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume);
+			sprintf(pinrtdata,"Remain H2O2   : %3d\n",CurrentRFIDData.volume/2);
 			printmsg(pinrtdata);
 		}
 

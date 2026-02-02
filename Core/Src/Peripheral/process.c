@@ -37,6 +37,8 @@ int StopFlag=0;
 
 int leaktesttime=60;
 
+int VacuumCheck=0;
+
 /*
 알람1	장비 전원 정전	장비 전원 차단 됨
 알람2	멸균제 사용 기간 지남	장비내 멸균제 삽입 후 60일 지남
@@ -168,8 +170,8 @@ void HalfSecondProcess(void){
 
 	if(Running_Flag==0){
 		DisplayIcons();
-		//임시 테스트
-
+	}
+	if(Running_Flag==0&&SelfTestMode==0&&VacuumOnOff==0){
 		//도어 오픈
 		if(DoorOpenFlag==1){
 			if(DoorLatchCheck()){
@@ -186,7 +188,9 @@ void HalfSecondProcess(void){
 			DoorLatch(0);
 			DoorOpenFlag=0;
 		}
-		DoorOpenFlag=DoorOpenProcess();
+		if(DoorOpenVentFlag==0){
+			DoorOpenFlag=DoorOpenProcess();
+		}
 		if(DoorOpenVentFlag==1){
 			if(DoorOpenVentCnt>=0){
 				DoorOpenVentCnt--;
@@ -196,7 +200,12 @@ void HalfSecondProcess(void){
 				DoorOpenVentCnt=0;
 				DoorOpenVentFlag=0;
 				VentValve(0);
-				DoorOpenFlag=1;
+				if(VacuumCheck==1){
+					VacuumCheck=0;
+				}
+				else{
+					DoorOpenFlag=1;
+				}
 	        	DisplayPage(beforepage);
 			}
 		}
@@ -556,7 +565,12 @@ void Init_Device(){
     }
     InitLCD();
 	RFIDCheck();
-    DisplayPage(currentpage);
+    if(flash_ProcessPowerOffFlag==1){
+    	DisplayPage(LCD_POWEROFFCHECK_PAGE);
+    }
+    else{
+    	DisplayFirstPage();
+    }
 	//HAL_Delay(4000);
 }
 
@@ -596,6 +610,7 @@ void StartProcess(){
 	PressureData[0]=Pressure;
 	TemperatureData[0]=Temperature[1];
 
+	flash_ProcessPowerOffFlag=1;
 	Select_NORMAL_MODE=1;
 	Running_Flag=1;
 
@@ -667,6 +682,7 @@ void FactoryTestStart(){
 	PressureData[0]=Pressure;
 	TemperatureData[0]=Temperature[1];
 
+	flash_ProcessPowerOffFlag=1;
 	Select_NORMAL_MODE=0;
 	Running_Flag=1;
 	HeaterControlMode=2;
@@ -980,6 +996,7 @@ void NormalMode(){
 	if(CurrentProcess>6){	//종료 시 초기화
 		EndTimeCounter=10;
 
+
 		VacuumPump(0);
 		Fan(0);
 		VacuumValve(0);
@@ -1012,6 +1029,8 @@ void NormalMode(){
 		//Write_Setting_Data_Flash();
 		HAL_Delay(100);
 		//Write_Data_Flash();
+
+		flash_ProcessPowerOffFlag=0;
 
 		Write_Flash();
 
@@ -1155,6 +1174,8 @@ void FactoryTestMode(){
 		}
 		SaveCycle();	//여기 확인
 
+		flash_ProcessPowerOffFlag=0;
+
 		Write_Flash();
 
 
@@ -1163,6 +1184,7 @@ void FactoryTestMode(){
 
 		DisplayProcessTestValues();
 		DisplayPage(LCD_FACTORY_TESTMODE_PROCESSTEST1_PAGE);
+
 	}
 	else{	//정상 동작
 		if(CurrentStep>10){

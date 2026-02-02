@@ -92,8 +92,6 @@ int DoorOpenProcess(){
 		DoorCheckcnt=0;
 	}
 	if(DoorCheckcnt==1){
-	//if(DoorCheckcnt==2){
-		//기존 체크 방식
 		if(DoorLatchCheck()){
     		if(Pressure>DoorOpenPressure){
     			return 1;

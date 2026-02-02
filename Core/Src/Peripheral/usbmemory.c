@@ -68,7 +68,7 @@ void SaveCycle(){
 						f_printf(&USBHFile,"SERIAL NO     :  %02d-%02d-%02d-%02d\n",(int)CurrentRFIDData.production_year,(int)CurrentRFIDData.production_month,(int)CurrentRFIDData.production_day, (int)CurrentRFIDData.production_number);
 						f_printf(&USBHFile,"Loading Date  :  %2d-%02d-%02d\n",(int)CurrentRFIDData.open_year,(int)CurrentRFIDData.open_month,(int)CurrentRFIDData.open_day);
 						f_printf(&USBHFile,"Expiry Date   :  %2d-%02d-%02d\n",(int)CurrentRFIDData.expiry_year,(int)CurrentRFIDData.expiry_month,(int)CurrentRFIDData.expiry_day);
-						f_printf(&USBHFile,"Remain H2O2   :  %02d\n",CurrentRFIDData.volume);
+						f_printf(&USBHFile,"Remain H2O2   :  %02d\n",CurrentRFIDData.volume/2);
 
 						f_printf(&USBHFile,"Selected Cycle:  %d    \n",CycleName);
 
@@ -473,7 +473,6 @@ void ReadListData(int year, int month, int day){
 		f_mount(NULL, USBHPath, 0);
 	}
     //int n = sizeof(temptotalcycle) / sizeof(temptotalcycle[0]);
-
     //sortNonZeroElementsKeepFirstZero(temptotalcycle, n);
 }
 
@@ -505,7 +504,7 @@ void SaveSetting(){
 					f_printf(&USBHFile,"Depart Name   :  %s\n",flash_DEPARTMENT_NAME);
 					f_printf(&USBHFile,"S/W Version   :  %s\n",flash_SOFTWARE_VERSION);
 
-					for(int i=0;i<5;i++){
+					for(int i=0;i<4;i++){
 						f_printf(&USBHFile,"ID%d : %s\n",i,flash_ID[i]);
 						f_printf(&USBHFile,"PW%d : %s\n",i,flash_PW[i]);
 					}
@@ -567,8 +566,8 @@ void SaveSetting(){
 					f_printf(&USBHFile,"RFIDData.expiry_year : %d\n",CurrentRFIDData.expiry_year);
 					f_printf(&USBHFile,"RFIDData.expiry_month : %d\n",CurrentRFIDData.expiry_month);
 					f_printf(&USBHFile,"RFIDData.expiry_day : %d\n",CurrentRFIDData.expiry_day);
-					f_printf(&USBHFile,"RFIDData.volume : %d\n",CurrentRFIDData.volume);
-					f_printf(&USBHFile,"RFIDData.volumemax : %d\n",CurrentRFIDData.volumemax);
+					f_printf(&USBHFile,"RFIDData.volume : %d\n",CurrentRFIDData.volume/2);
+					f_printf(&USBHFile,"RFIDData.volumemax : %d\n",CurrentRFIDData.volumemax/2);
 
 					f_printf(&USBHFile,"CarbonFilterMax : %d\n",CarbonFilterMax);
 					f_printf(&USBHFile,"HEPAFilterMax : %d\n",HEPAFilterMax);

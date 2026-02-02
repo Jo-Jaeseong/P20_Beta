@@ -29,10 +29,10 @@ char inputCreatePW2[10];
 
 
 unsigned char master_ID[10]="CBT";
-unsigned char master_PW[10]="1234";
+unsigned char master_PW[10]="4850";
 
 unsigned char admin_ID[10]="ADMIN";
-unsigned char admin_PW[10]="1234";
+unsigned char admin_PW[10]="1111";
 
 char inputloginID[10];
 char inputloginPW[10];
@@ -90,14 +90,12 @@ int loginProcess() {
 		CurrentUser=9;
         return 1;
 	}
-
     for (int i = 0; i < flashuserCount; i++) {
         if (strcmp(flash_ID[i], inputloginID) == 0 && strcmp(flash_PW[i], inputloginPW) == 0) {
         	CurrentUser=i;
             return 1;
         }
     }
-
     return 0;
 }
 
@@ -111,7 +109,7 @@ int changePWloginUser(){
         return 0;
     }
     //여기수정중
-    if(strcmp(flash_PW[Select_ID], inputManagementPW) == 0) {
+    if(strcmp(flash_PW[Select_ID], inputManagementPW) == 0||strcmp(admin_PW, inputManagementPW) == 0) {
        	return 1;
     }
     else{
@@ -124,7 +122,7 @@ int DeletConfirmloginUser(){
 	memset(inputManagementPW2, 0, 10);
 
 	ReadInputManagmentIDPWFromLCD();
-    if(strcmp(flash_PW[Select_ID], inputManagementPW) == 0) {
+    if(strcmp(flash_PW[Select_ID], inputManagementPW) == 0||strcmp(admin_PW, inputManagementPW) == 0) {
 		for (int i = Select_ID; i < 4; i++) {
 			strcpy(flash_ID[i], flash_ID[i + 1]);
 			strcpy(flash_PW[i], flash_PW[i + 1]);
@@ -142,7 +140,6 @@ int DeletConfirmloginUser(){
 int changePWUser(){
 	memset(inputManagementPW, 0, 10);
 	memset(inputManagementPW2, 0, 10);
-
 	ReadInputManagmentIDPWFromLCD();
     if (strcmp(inputManagementPW, inputManagementPW2) == 0) {
         for(int i=0;i<10;i++){
@@ -263,7 +260,6 @@ void ReadInputManagmentIDPWFromLCD(){
     		inputManagementPW[i]=LCD_rx_data[i+7];
     	}
 	}
-
 	get_lcd_data[5]=0x80;//PW2
     HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
     HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
@@ -276,8 +272,6 @@ void ReadInputManagmentIDPWFromLCD(){
     		inputManagementPW2[i]=LCD_rx_data[i+7];
     	}
 	}
-
-
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();

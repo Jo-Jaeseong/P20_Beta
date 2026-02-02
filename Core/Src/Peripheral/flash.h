@@ -34,6 +34,7 @@ extern unsigned char flashuserCount;
 extern unsigned char AutoLoginFlag;
 extern unsigned char AutoLoginID;
 
+extern unsigned char flash_ProcessPowerOffFlag;
 
 void Write_Flash();
 void Read_Flash();
