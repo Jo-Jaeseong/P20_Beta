@@ -289,7 +289,7 @@ void GetTime();
 
 
 //RTC
-void ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week,
+int ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week,
 				unsigned char *hour, unsigned char *minute, unsigned char *second);
 void SetRTCFromLCD();
 void Get_RTC_Time(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week,

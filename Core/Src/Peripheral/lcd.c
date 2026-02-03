@@ -5089,17 +5089,22 @@ void DisplaySterilantData(){
 	DisplayIcon(0x02, 0x90, (CurrentRFIDData.volume/2)%10);
 }
 
-void ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week, unsigned char *hour, unsigned char *minute, unsigned char *second){
+int ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week, unsigned char *hour, unsigned char *minute, unsigned char *second){
 	//RTC
 	const unsigned char rtc_date_get[6] = {0x5A, 0xA5, 0x03, 0x81, 0x20, 0x04};
 	const unsigned char rtc_time_get[6] = {0x5A, 0xA5, 0x03, 0x81, 0x24, 0x03};
+	HAL_StatusTypeDef rx_status;
+	int result = 0;
 
 	__disable_irq();
     huart1.RxState= HAL_UART_STATE_READY;
     memset(LCD_rx_data, 0, 30);
 
     HAL_UART_Transmit(LCD_USART, (uint8_t*)rtc_date_get, 6, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 10, 10);
+    rx_status = HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 10, 10);
+    if (rx_status != HAL_OK || !LCD_IsValidFrame(LCD_rx_data, 10)) {
+    	goto read_rtc_done;
+    }
     *year = LCD_rx_data[6];
     *month = LCD_rx_data[7];
     *day = LCD_rx_data[8];
@@ -5107,20 +5112,28 @@ void ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsi
 
     memset(LCD_rx_data, 0, 30);
     HAL_UART_Transmit(LCD_USART, (uint8_t*)rtc_time_get, 6, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 9, 10);
+    rx_status = HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 9, 10);
+    if (rx_status != HAL_OK || !LCD_IsValidFrame(LCD_rx_data, 9)) {
+    	goto read_rtc_done;
+    }
     *hour = LCD_rx_data[6];
     *minute = LCD_rx_data[7];
     *second = LCD_rx_data[8];
+    result = 1;
 
+read_rtc_done:
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();
+    return result;
 }
 
 void SetRTCFromLCD(){
     RTC_TimeTypeDef sTime = {0};
     RTC_DateTypeDef sDate = {0};
-    ReadRTC(&sDate.Year, &sDate.Month, &sDate.Date, &sDate.WeekDay, &sTime.Hours, &sTime.Minutes, &sTime.Seconds);
+    if (!ReadRTC(&sDate.Year, &sDate.Month, &sDate.Date, &sDate.WeekDay, &sTime.Hours, &sTime.Minutes, &sTime.Seconds)) {
+    	return;
+    }
 
     sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
     sTime.StoreOperation = RTC_STOREOPERATION_RESET;
