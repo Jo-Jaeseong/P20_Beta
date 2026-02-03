@@ -44,6 +44,20 @@ unsigned int inputyear, inputmonth, inputday;
 int Adminpassword[4]={1,1,1,1};
 int Masterpassword[4]={4,8,5,0};
 
+static int LCD_IsValidFrame(const uint8_t *buffer, uint16_t length)
+{
+	if (length < 3) {
+		return 0;
+	}
+	if (buffer[0] != 0x5A || buffer[1] != 0xA5) {
+		return 0;
+	}
+	if ((uint16_t)buffer[2] + 3 != length) {
+		return 0;
+	}
+	return 1;
+}
+
 void InitLCD(void){	//LCD 초기화
 	HAL_Delay(1000);
 	DisplayFirstPage();
@@ -291,6 +305,10 @@ void DisplayVacuumGraph(int number, int color){
 //LCD 수신
 void LCD_Process(){
     int iValue;
+	if (!LCD_IsValidFrame(LCD_rx_data, 9)) {
+		ReadLCD();
+		return;
+	}
     switch(LCD_rx_data[4]) {
         case 0x00 :    //button
             LCD_Function_Process(LCD_rx_data[5], LCD_rx_data[8]);
