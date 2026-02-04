@@ -28,38 +28,43 @@
 #define Limit4_Pin		GPIO_IN4_Pin
 
 
+static int DebounceInput(GPIO_TypeDef *port, uint16_t pin, int active_low, int index)
+{
+	static int stable_state[4] = {0};
+	static int last_state[4] = {0};
+	static uint8_t stable_count[4] = {0};
+	const uint8_t threshold = 2;
+	int raw = (HAL_GPIO_ReadPin(port, pin) == GPIO_PIN_SET) ? 1 : 0;
+	int value = active_low ? !raw : raw;
+
+	if (value == last_state[index]) {
+		if (stable_count[index] < threshold) {
+			stable_count[index]++;
+		}
+	} else {
+		stable_count[index] = 0;
+		last_state[index] = value;
+	}
+
+	if (stable_count[index] >= threshold) {
+		stable_state[index] = value;
+	}
+
+	return stable_state[index];
+}
+
 int Limit1(){
-	if(HAL_GPIO_ReadPin(Limit1_Port, Limit1_Pin)==1){
-		return 0;
-	}
-	else{
-		return 1;
-	}
+	return DebounceInput(Limit1_Port, Limit1_Pin, 1, 0);
 }
 
 int Limit2(){
-	if(HAL_GPIO_ReadPin(Limit2_Port, Limit2_Pin)==1){
-		return 0;
-	}
-	else{
-		return 1;
-	}
+	return DebounceInput(Limit2_Port, Limit2_Pin, 1, 1);
 }
 
 int Limit3(){
-	if(HAL_GPIO_ReadPin(Limit3_Port, Limit3_Pin)==1){
-		return 0;
-	}
-	else{
-		return 1;
-	}
+	return DebounceInput(Limit3_Port, Limit3_Pin, 1, 2);
 }
 
 int Limit4(){
-	if(HAL_GPIO_ReadPin(Limit4_Port, Limit4_Pin)==1){
-		return 0;
-	}
-	else{
-		return 1;
-	}
+	return DebounceInput(Limit4_Port, Limit4_Pin, 1, 3);
 }

@@ -68,14 +68,19 @@ void Read_Vacuumsensor(){
 	RS485_TX_DISABLE();
 
 	memset(RX_vacuum, 0, 7);
-	rx_status = HAL_UART_Receive(&huart6, RX_vacuum, 7, 20);
-	if (rx_status != HAL_OK) {
-		return;
+	for (uint8_t attempt = 0; attempt < 2; attempt++) {
+		rx_status = HAL_UART_Receive(&huart6, RX_vacuum, 7, 20);
+		if (rx_status != HAL_OK) {
+			continue;
+		}
+		calc_crc = Modbus_CRC16(RX_vacuum, 5);
+		rx_crc = (uint16_t)RX_vacuum[5] | ((uint16_t)RX_vacuum[6] << 8);
+		if (calc_crc == rx_crc && RX_vacuum[0] == TX_vacuum[0] && RX_vacuum[1] == 0x03 && RX_vacuum[2] == 0x02) {
+			break;
+		}
+		rx_status = HAL_ERROR;
 	}
-
-	calc_crc = Modbus_CRC16(RX_vacuum, 5);
-	rx_crc = (uint16_t)RX_vacuum[5] | ((uint16_t)RX_vacuum[6] << 8);
-	if (calc_crc != rx_crc || RX_vacuum[0] != TX_vacuum[0] || RX_vacuum[1] != 0x03 || RX_vacuum[2] != 0x02) {
+	if (rx_status != HAL_OK) {
 		return;
 	}
 

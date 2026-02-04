@@ -14,20 +14,34 @@
 #define LevelSensor2_Port	GPIO_IN7_GPIO_Port
 #define LevelSensor2_Pin	GPIO_IN7_Pin
 
+static int DebounceLevel(GPIO_TypeDef *port, uint16_t pin, int index)
+{
+	static int stable_state[2] = {0};
+	static int last_state[2] = {0};
+	static uint8_t stable_count[2] = {0};
+	const uint8_t threshold = 2;
+	int value = (HAL_GPIO_ReadPin(port, pin) == GPIO_PIN_SET) ? 1 : 0;
+
+	if (value == last_state[index]) {
+		if (stable_count[index] < threshold) {
+			stable_count[index]++;
+		}
+	} else {
+		stable_count[index] = 0;
+		last_state[index] = value;
+	}
+
+	if (stable_count[index] >= threshold) {
+		stable_state[index] = value;
+	}
+
+	return stable_state[index];
+}
+
 int LevelSensor1Check(){
-	if(HAL_GPIO_ReadPin(LevelSensor1_Port, LevelSensor1_Pin)==1){
-		return 1;
-	}
-	else{
-		return 0;
-	}
+	return DebounceLevel(LevelSensor1_Port, LevelSensor1_Pin, 0);
 }
 
 int LevelSensor2Check(){
-	if(HAL_GPIO_ReadPin(LevelSensor2_Port, LevelSensor2_Pin)==1){
-		return 1;
-	}
-	else{
-		return 0;
-	}
+	return DebounceLevel(LevelSensor2_Port, LevelSensor2_Pin, 1);
 }

@@ -158,10 +158,12 @@ void ReadInputCreateIDPWFromLCD(){
     huart1.RxState= HAL_UART_STATE_READY;
     unsigned char get_lcd_data[7] = {0x5A, 0xA5, 0x04, 0x83, 0x63, 0x30, 0x05};
     memset(LCD_rx_data, 0, 30);
-    get_lcd_data[5]=0x10;//ID
-    get_lcd_data[6]=0x05;//Size
-    HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+	get_lcd_data[5]=0x10;//ID
+	get_lcd_data[6]=0x05;//Size
+	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
+	if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+		goto read_create_done;
+	}
 
     for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -174,7 +176,9 @@ void ReadInputCreateIDPWFromLCD(){
 
 	get_lcd_data[5]=0x20;//PW
     HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+    if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+    	goto read_create_done;
+    }
 
     for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -185,9 +189,11 @@ void ReadInputCreateIDPWFromLCD(){
     	}
     }
 
-    get_lcd_data[5]=0x30;//PW2
+	get_lcd_data[5]=0x30;//PW2
 	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-	HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+	if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+		goto read_create_done;
+	}
 
     for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -198,6 +204,7 @@ void ReadInputCreateIDPWFromLCD(){
     	}
     }
 
+read_create_done:
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();
@@ -208,10 +215,12 @@ void ReadInputLoginIDPWFromLCD(){
     huart1.RxState= HAL_UART_STATE_READY;
     unsigned char get_lcd_data[7] = {0x5A, 0xA5, 0x04, 0x83, 0x61, 0x30, 0x05};
     memset(LCD_rx_data, 0, 30);
-    get_lcd_data[5]=0x10;//ID
-    get_lcd_data[6]=0x05;//Size
-    HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+	get_lcd_data[5]=0x10;//ID
+	get_lcd_data[6]=0x05;//Size
+	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
+	if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+		goto read_login_done;
+	}
     memset(inputloginID,0,10);
     for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -225,7 +234,9 @@ void ReadInputLoginIDPWFromLCD(){
 
 	get_lcd_data[5]=0x20;//PW
     HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+    if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+    	goto read_login_done;
+    }
     memset(inputloginPW,0,10);
 	for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -236,6 +247,7 @@ void ReadInputLoginIDPWFromLCD(){
     	}
 	}
 
+read_login_done:
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();
@@ -247,10 +259,12 @@ void ReadInputManagmentIDPWFromLCD(){
     huart1.RxState= HAL_UART_STATE_READY;
     unsigned char get_lcd_data[7] = {0x5A, 0xA5, 0x04, 0x83, 0x64, 0x30, 0x05};
     memset(LCD_rx_data, 0, 30);
-    get_lcd_data[5]=0x70;//PW
-    get_lcd_data[6]=0x05;//Size
-    HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+	get_lcd_data[5]=0x70;//PW
+	get_lcd_data[6]=0x05;//Size
+	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
+	if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+		goto read_update_done;
+	}
 
 	for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -262,7 +276,9 @@ void ReadInputManagmentIDPWFromLCD(){
 	}
 	get_lcd_data[5]=0x80;//PW2
     HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+    if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+    	goto read_update_done;
+    }
 
 	for(int i=0;i<10;i++){
     	if(LCD_rx_data[i+7]==0xFF){
@@ -272,6 +288,7 @@ void ReadInputManagmentIDPWFromLCD(){
     		inputManagementPW2[i]=LCD_rx_data[i+7];
     	}
 	}
+read_update_done:
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();
