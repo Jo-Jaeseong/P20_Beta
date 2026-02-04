@@ -523,16 +523,16 @@ void Read_Flash(){
 	//온도세팅 저장
 	DoorSettingTemp[0]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA],58);
 	DoorSettingTemp[1]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+1],58);
-	DoorSettingTemp[2]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+2],DoorSettingTemp[1]);
+	DoorSettingTemp[2]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+2],20);
 	ChamberSettingTemp[0]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA],58);
 	ChamberSettingTemp[1]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+1],58);
-	ChamberSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+2],ChamberSettingTemp[1]);
+	ChamberSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+2],20);
 	ChamberBackSettingTemp[0]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA],58);
 	ChamberBackSettingTemp[1]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+1],58);
-	ChamberBackSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+2],ChamberBackSettingTemp[1]);
+	ChamberBackSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+2],20);
 	VaporizerSettingTemp[0]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA],80);
 	VaporizerSettingTemp[1]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+1],130);
-	VaporizerSettingTemp[2]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+2],VaporizerSettingTemp[1]);
+	VaporizerSettingTemp[2]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+2],20);
 
 	//진공조건 저장
 	PreesureCondition[0]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA],70);
