@@ -35,27 +35,16 @@ int DoorHandleCheck(){
 */
 
 int DoorHandleCheck(){
-	static int stable_state = 0;
-	static int last_state = 0;
-	static uint8_t stable_count = 0;
-	const uint8_t threshold = 2;
-	int raw = (HAL_GPIO_ReadPin(DoorHandle_Port, DoorHandle_Pin) == GPIO_PIN_SET) ? 1 : 0;
-	int value = !raw;
+	if(HAL_GPIO_ReadPin(DoorHandle_Port, DoorHandle_Pin)==1){
+	//정상
 
-	if (value == last_state) {
-		if (stable_count < threshold) {
-			stable_count++;
-		}
-	} else {
-		stable_count = 0;
-		last_state = value;
+	//if(HAL_GPIO_ReadPin(DoorHandle_Port, DoorHandle_Pin)==0){
+		//기구물 거리 확인 필요 일단 반대로 인식되게 설정
+		return 0;
 	}
-
-	if (stable_count >= threshold) {
-		stable_state = value;
+	else{
+		return 1;
 	}
-
-	return stable_state;
 }
 
 
