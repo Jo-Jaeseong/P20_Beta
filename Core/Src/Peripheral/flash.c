@@ -413,7 +413,7 @@ void Read_Flash(){
 
 	/* 장비 */
 	Device_First_Boot=userdata[DEVICE_BOOTFLAG_DATA];
-	if(Device_First_Boot==0){
+	if(Device_First_Boot==0 || Device_First_Boot==0xFF){
 		Device_First_Boot=1;
 	}
 
@@ -469,7 +469,7 @@ void Read_Flash(){
 
 	/*자동 로그인*/
 	AutoLoginFlag=userdata[AUTO_LOGINFLAG_DATA];
-	if(AutoLoginFlag==0){
+	if(AutoLoginFlag==0 || AutoLoginFlag==0xFF){
 		AutoLoginFlag=2;
 	}
 	AutoLoginID=userdata[AUTO_LOGINID_DATA];
@@ -503,22 +503,22 @@ void Read_Flash(){
 
 	for(int i=0;i<15;i++){
 		AlarmCheckFlag[i]=userdata[ALARMCHECKFLAG_DATA+i];
-		if(AlarmCheckFlag[i]==0){
+		if(AlarmCheckFlag[i]==0 || AlarmCheckFlag[i]==0xFF){
 			AlarmCheckFlag[i]=1;
 		}
 		ErrorCheckFlag[i]=userdata[ERRORCHECKFLAG_DATA+i];
-		if(ErrorCheckFlag[i]==0){
+		if(ErrorCheckFlag[i]==0 || ErrorCheckFlag[i]==0xFF){
 			ErrorCheckFlag[i]=1;
 		}
 	}
 
 	reservationFlag=userdata[RESERVATIONFLAG_DATA];
-	if(reservationFlag==0){
+	if(reservationFlag==0 || reservationFlag==0xFF){
 		reservationFlag=2;
 	}
 
 	autoprintFlag=userdata[AUTOPRINTFLAG_DATA];
-	if(autoprintFlag==0){
+	if(autoprintFlag==0 || autoprintFlag==0xFF){
 		autoprintFlag=1;
 	}
 	printcopy=userdata[PRINTCOPY_DATA];
@@ -526,12 +526,12 @@ void Read_Flash(){
 		printcopy=1;
 	}
 	printdataFlag=userdata[PRINTDATAFLAG_DATA];
-	if(printdataFlag==0){
+	if(printdataFlag==0 || printdataFlag==0xFF){
 		printdataFlag=1;
 	}
 
 	printgraphFlag=userdata[PRINTGRAPHFLAG_DATA];
-	if(printgraphFlag==0){
+	if(printgraphFlag==0 || printgraphFlag==0xFF){
 		printgraphFlag=1;
 	}
 
@@ -700,15 +700,15 @@ void Read_Flash(){
 
 	/*공장 세팅*///(3)
 	LoginFlag=userdata[LOGINFLAG_DATA];
-	if(LoginFlag==0){
+	if(LoginFlag==0 || LoginFlag==0xFF){
 		LoginFlag=2;
 	}
 	MonitorFlag=userdata[MONITORFLAG_DATA];
-	if(MonitorFlag==0){
+	if(MonitorFlag==0 || MonitorFlag==0xFF){
 		MonitorFlag=1;
 	}
 	LanguageFlag=userdata[LANGUAGE_DATA];
-	if(LanguageFlag==0){
+	if(LanguageFlag==0 || LanguageFlag==0xFF){
 		LanguageFlag=1;
 	}
 
