@@ -190,6 +190,20 @@ static unsigned char NormalizeFlag(unsigned char value, unsigned char default_va
 	return default_value;
 }
 
+static unsigned char NormalizeByteValue(unsigned char value, unsigned char default_value){
+	if(value==0 || value==0xFF){
+		return default_value;
+	}
+	return value;
+}
+
+static unsigned int NormalizeWordValue(unsigned char high, unsigned char low, unsigned int default_value){
+	if((high==0 && low==0) || (high==0xFF && low==0xFF)){
+		return default_value;
+	}
+	return (high*100)+low;
+}
+
 void Write_Flash(){
 	DisplayPage(LCD_LOADING_PAGE);
 	DisplayPageValue(0x00,0x0A,0);
@@ -507,116 +521,46 @@ void Read_Flash(){
 	printgraphFlag=NormalizeFlag(userdata[PRINTGRAPHFLAG_DATA],1);
 
 	//온도세팅 저장
-	DoorSettingTemp[0]=userdata[DOORSETTINGTEMP_DATA];
-	DoorSettingTemp[1]=userdata[DOORSETTINGTEMP_DATA+1];
-	DoorSettingTemp[2]=userdata[DOORSETTINGTEMP_DATA+2];
-	ChamberSettingTemp[0]=userdata[CHAMBERSETTINGTEMP_DATA];
-	ChamberSettingTemp[1]=userdata[CHAMBERSETTINGTEMP_DATA+1];
-	ChamberSettingTemp[2]=userdata[CHAMBERSETTINGTEMP_DATA+2];
-	ChamberBackSettingTemp[0]=userdata[CHAMBERBACKSETTINGTEMP_DATA];
-	ChamberBackSettingTemp[1]=userdata[CHAMBERBACKSETTINGTEMP_DATA+1];
-	ChamberBackSettingTemp[2]=userdata[CHAMBERBACKSETTINGTEMP_DATA+2];
-	VaporizerSettingTemp[0]=userdata[VAPORIZERSETTINGTEMP_DATA];
-	VaporizerSettingTemp[1]=userdata[VAPORIZERSETTINGTEMP_DATA+1];
-	VaporizerSettingTemp[2]=userdata[VAPORIZERSETTINGTEMP_DATA+2];
-	if(DoorSettingTemp[0]==0){
-		DoorSettingTemp[0]=58;
-	}
-	if(DoorSettingTemp[1]==0){
-		DoorSettingTemp[1]=58;
-	}
-	if(ChamberSettingTemp[0]==0){
-		ChamberSettingTemp[0]=58;
-	}
-	if(ChamberSettingTemp[1]==0){
-		ChamberSettingTemp[1]=58;
-	}
-	if(ChamberBackSettingTemp[0]==0){
-		ChamberBackSettingTemp[0]=58;
-	}
-	if(ChamberBackSettingTemp[1]==0){
-		ChamberBackSettingTemp[1]=58;
-	}
-	if(VaporizerSettingTemp[0]==0){
-		VaporizerSettingTemp[0]=80;
-	}
-	if(VaporizerSettingTemp[1]==0){
-		VaporizerSettingTemp[1]=130;
-	}
+	DoorSettingTemp[0]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA],58);
+	DoorSettingTemp[1]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+1],58);
+	DoorSettingTemp[2]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+2],DoorSettingTemp[1]);
+	ChamberSettingTemp[0]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA],58);
+	ChamberSettingTemp[1]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+1],58);
+	ChamberSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+2],ChamberSettingTemp[1]);
+	ChamberBackSettingTemp[0]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA],58);
+	ChamberBackSettingTemp[1]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+1],58);
+	ChamberBackSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+2],ChamberBackSettingTemp[1]);
+	VaporizerSettingTemp[0]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA],80);
+	VaporizerSettingTemp[1]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+1],130);
+	VaporizerSettingTemp[2]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+2],VaporizerSettingTemp[1]);
 
 	//진공조건 저장
-	PreesureCondition[0]=userdata[PRESSURECONDITION_DATA];
-	PreesureCondition[1]=userdata[PRESSURECONDITION_DATA+1];
-	PreesureCondition[2]=userdata[PRESSURECONDITION_DATA+2];
-
-	if(PreesureCondition[0]==0){
-			PreesureCondition[0]=70;
-	}
-	if(PreesureCondition[1]==0){
-			PreesureCondition[1]=25;
-	}
-	if(PreesureCondition[2]==0){
-			PreesureCondition[2]=30;
-	}
+	PreesureCondition[0]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA],70);
+	PreesureCondition[1]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+1],25);
+	PreesureCondition[2]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+2],30);
 
 	//페리 스피드 저장
-	perispeed=userdata[PERISPEED_DATA];
-	if(perispeed==0){
-		perispeed=6;
-	}
+	perispeed=NormalizeByteValue(userdata[PERISPEED_DATA],6);
 
 	//캘리브레이션 데이터 저장
-	CalibrationTemp[0]=userdata[CALIBRATIONTEMP_DATA];
-	CalibrationTemp[1]=userdata[CALIBRATIONTEMP_DATA+1];
-	CalibrationTemp[2]=userdata[CALIBRATIONTEMP_DATA+2];
-	CalibrationTemp[3]=userdata[CALIBRATIONTEMP_DATA+3];
-	if(CalibrationTemp[0]==0){
-		CalibrationTemp[0]=20;
-	}
-	if(CalibrationTemp[1]==0){
-		CalibrationTemp[1]=20;
-	}
-	if(CalibrationTemp[2]==0){
-		CalibrationTemp[2]=20;
-	}
-	if(CalibrationTemp[3]==0){
-		CalibrationTemp[3]=20;
-	}
-	CalibrationVacuum=userdata[CALIBRATIONVACUUM_DATA];
-	if(CalibrationVacuum==0){
-		CalibrationVacuum=10;
-	}
+	CalibrationTemp[0]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA],20);
+	CalibrationTemp[1]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA+1],20);
+	CalibrationTemp[2]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA+2],20);
+	CalibrationTemp[3]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA+3],20);
+	CalibrationVacuum=NormalizeByteValue(userdata[CALIBRATIONVACUUM_DATA],10);
 
 
 	//셀프 테스트 벨류 및 오차 저장
-	TestVacuumValue=userdata[TESTVACUUMVALUE_DATA];
-	if(TestVacuumValue==0){
-		TestVacuumValue=10;
-	}
-	TestLeakValue=userdata[TESTLEAKVALUE_DATA];
-	if(TestLeakValue==0){
-		TestLeakValue=2;
-	}
-	TestTempErrorValue=userdata[TESTTEMPERRORVALUE_DATA];
-	if(TestTempErrorValue==0){
-		TestTempErrorValue=3;
-	}
+	TestVacuumValue=NormalizeByteValue(userdata[TESTVACUUMVALUE_DATA],10);
+	TestLeakValue=NormalizeByteValue(userdata[TESTLEAKVALUE_DATA],2);
+	TestTempErrorValue=NormalizeByteValue(userdata[TESTTEMPERRORVALUE_DATA],3);
 
 	//과수 기한 설정
-	expiry_date1=userdata[EXPIRY_DATE1_DATA];
-	if(expiry_date1==0){
-		expiry_date1=12;
-	}
-	expiry_date2=userdata[EXPIRY_DATE2_DATA];
-	if(expiry_date2==0){
-		expiry_date2=2;
-	}
+	expiry_date1=NormalizeByteValue(userdata[EXPIRY_DATE1_DATA],12);
+	expiry_date2=NormalizeByteValue(userdata[EXPIRY_DATE2_DATA],2);
 
 	//도어 오픈 압력 설정
-	DoorOpenPressure=(userdata[DOOROPENPRESSURE_DATA]*100)+(userdata[DOOROPENPRESSURE_DATA+1]);
-	if(DoorOpenPressure==0){
-		DoorOpenPressure=720;
-	}
+	DoorOpenPressure=NormalizeWordValue(userdata[DOOROPENPRESSURE_DATA],userdata[DOOROPENPRESSURE_DATA+1],720);
 
 
 	/*PM 정보*///(22)
