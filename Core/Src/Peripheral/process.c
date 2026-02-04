@@ -562,6 +562,7 @@ void Init_Device(){
     	SleepModeInit();
     	PMinit();
     	Device_First_Boot=2;
+    	Write_Flash();
     }
     InitLCD();
 	RFIDCheck();

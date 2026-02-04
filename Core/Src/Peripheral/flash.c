@@ -421,10 +421,7 @@ void Read_Flash(){
 	}
 
 	/* 장비 */
-	Device_First_Boot=userdata[DEVICE_BOOTFLAG_DATA];
-	if(Device_First_Boot==0){
-		Device_First_Boot=1;
-	}
+	Device_First_Boot=NormalizeFlag(userdata[DEVICE_BOOTFLAG_DATA],1);
 
 	/*장비 정보*///(70)
 	for(int i=0;i<10;i++){
