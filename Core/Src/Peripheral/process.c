@@ -1030,7 +1030,7 @@ void NormalMode(){
 		HAL_Delay(100);
 		//Write_Data_Flash();
 
-		flash_ProcessPowerOffFlag=0;
+		flash_ProcessPowerOffFlag=2;
 
 		Write_Flash();
 
@@ -1174,7 +1174,7 @@ void FactoryTestMode(){
 		}
 		SaveCycle();	//여기 확인
 
-		flash_ProcessPowerOffFlag=0;
+		flash_ProcessPowerOffFlag=2;
 
 		Write_Flash();
 

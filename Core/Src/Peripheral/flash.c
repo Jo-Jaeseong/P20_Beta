@@ -180,6 +180,15 @@ unsigned char flash_ProcessPowerOffFlag;
 
 //-----------------------------------------------------------------------------------------------------------------------//
 
+static unsigned char NormalizeFlag(unsigned char value, unsigned char default_value){
+	if(value==1 || value==2){
+		return value;
+	}
+	if(value==0 || value==0xFF){
+		return default_value;
+	}
+	return default_value;
+}
 
 void Write_Flash(){
 	DisplayPage(LCD_LOADING_PAGE);
@@ -440,27 +449,13 @@ void Read_Flash(){
 		ActiveModeTime[0][i]=userdata[ACTIVETIME_DATA+i];
 		ActiveModeTime[1][i]=userdata[ACTIVETIME_DATA+i+7];
 	}
-	if(ActiveWeekday[1]==0){
-		ActiveWeekday[1]=1;
-	}
-	if(ActiveWeekday[2]==0){
-		ActiveWeekday[2]=1;
-	}
-	if(ActiveWeekday[3]==0){
-		ActiveWeekday[3]=1;
-	}
-	if(ActiveWeekday[4]==0){
-		ActiveWeekday[4]=1;
-	}
-	if(ActiveWeekday[5]==0){
-		ActiveWeekday[5]=1;
-	}
-	if(ActiveWeekday[6]==0){
-		ActiveWeekday[6]=2;
-	}
-	if(ActiveWeekday[0]==0){
-		ActiveWeekday[0]=2;
-	}
+	ActiveWeekday[1]=NormalizeFlag(ActiveWeekday[1],1);
+	ActiveWeekday[2]=NormalizeFlag(ActiveWeekday[2],1);
+	ActiveWeekday[3]=NormalizeFlag(ActiveWeekday[3],1);
+	ActiveWeekday[4]=NormalizeFlag(ActiveWeekday[4],1);
+	ActiveWeekday[5]=NormalizeFlag(ActiveWeekday[5],1);
+	ActiveWeekday[6]=NormalizeFlag(ActiveWeekday[6],2);
+	ActiveWeekday[0]=NormalizeFlag(ActiveWeekday[0],2);
 	for(int i=0;i<7;i++){
 		if(ActiveModeTime[1][i]==0){
 			ActiveModeTime[1][i]=24;
@@ -468,10 +463,7 @@ void Read_Flash(){
 	}
 
 	/*자동 로그인*/
-	AutoLoginFlag=userdata[AUTO_LOGINFLAG_DATA];
-	if(AutoLoginFlag==0){
-		AutoLoginFlag=2;
-	}
+	AutoLoginFlag=NormalizeFlag(userdata[AUTO_LOGINFLAG_DATA],2);
 	AutoLoginID=userdata[AUTO_LOGINID_DATA];
 
 
@@ -502,38 +494,20 @@ void Read_Flash(){
 	*/
 
 	for(int i=0;i<15;i++){
-		AlarmCheckFlag[i]=userdata[ALARMCHECKFLAG_DATA+i];
-		if(AlarmCheckFlag[i]==0){
-			AlarmCheckFlag[i]=1;
-		}
-		ErrorCheckFlag[i]=userdata[ERRORCHECKFLAG_DATA+i];
-		if(ErrorCheckFlag[i]==0){
-			ErrorCheckFlag[i]=1;
-		}
+		AlarmCheckFlag[i]=NormalizeFlag(userdata[ALARMCHECKFLAG_DATA+i],1);
+		ErrorCheckFlag[i]=NormalizeFlag(userdata[ERRORCHECKFLAG_DATA+i],1);
 	}
 
-	reservationFlag=userdata[RESERVATIONFLAG_DATA];
-	if(reservationFlag==0){
-		reservationFlag=2;
-	}
+	reservationFlag=NormalizeFlag(userdata[RESERVATIONFLAG_DATA],2);
 
-	autoprintFlag=userdata[AUTOPRINTFLAG_DATA];
-	if(autoprintFlag==0){
-		autoprintFlag=1;
-	}
+	autoprintFlag=NormalizeFlag(userdata[AUTOPRINTFLAG_DATA],1);
 	printcopy=userdata[PRINTCOPY_DATA];
 	if(printcopy==0){
 		printcopy=1;
 	}
-	printdataFlag=userdata[PRINTDATAFLAG_DATA];
-	if(printdataFlag==0){
-		printdataFlag=1;
-	}
+	printdataFlag=NormalizeFlag(userdata[PRINTDATAFLAG_DATA],1);
 
-	printgraphFlag=userdata[PRINTGRAPHFLAG_DATA];
-	if(printgraphFlag==0){
-		printgraphFlag=1;
-	}
+	printgraphFlag=NormalizeFlag(userdata[PRINTGRAPHFLAG_DATA],1);
 
 	//온도세팅 저장
 	DoorSettingTemp[0]=userdata[DOORSETTINGTEMP_DATA];
@@ -696,21 +670,12 @@ void Read_Flash(){
 	HEPAFilter=(userdata[HEPAFILTER]*100)+(userdata[HEPAFILTER+1]);
 	PlasmaAssy=(userdata[PLASMAASSY]*100)+(userdata[PLASMAASSY+1]);
 
-	flash_ProcessPowerOffFlag=userdata[POWEROFF_DATA];
+	flash_ProcessPowerOffFlag=NormalizeFlag(userdata[POWEROFF_DATA],2);
 
 	/*공장 세팅*///(3)
-	LoginFlag=userdata[LOGINFLAG_DATA];
-	if(LoginFlag==0){
-		LoginFlag=2;
-	}
-	MonitorFlag=userdata[MONITORFLAG_DATA];
-	if(MonitorFlag==0){
-		MonitorFlag=1;
-	}
-	LanguageFlag=userdata[LANGUAGE_DATA];
-	if(LanguageFlag==0){
-		LanguageFlag=1;
-	}
+	LoginFlag=NormalizeFlag(userdata[LOGINFLAG_DATA],2);
+	MonitorFlag=NormalizeFlag(userdata[MONITORFLAG_DATA],1);
+	LanguageFlag=NormalizeFlag(userdata[LANGUAGE_DATA],1);
 
 
 

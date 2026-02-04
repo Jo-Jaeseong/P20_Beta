@@ -611,7 +611,7 @@ void DoActionButton(int key){	//0000 XXXX(key)
             		DisplayPage(LCD_CYCLESELECT_PAGE);
             	}
         	}
-        	flash_ProcessPowerOffFlag=0;
+        	flash_ProcessPowerOffFlag=2;
         	//fortest
 /*
         	DisplayPage(LCD_MONITOR_PAGE);
