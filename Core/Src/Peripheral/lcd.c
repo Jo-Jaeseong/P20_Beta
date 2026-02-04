@@ -44,6 +44,34 @@ unsigned int inputyear, inputmonth, inputday;
 int Adminpassword[4]={1,1,1,1};
 int Masterpassword[4]={4,8,5,0};
 
+static int LCD_IsValidFrame(const uint8_t *buffer, uint16_t length)
+{
+	if (length < 3) {
+		return 0;
+	}
+	if (buffer[0] != 0x5A || buffer[1] != 0xA5) {
+		return 0;
+	}
+	if ((uint16_t)buffer[2] + 3 != length) {
+		return 0;
+	}
+	return 1;
+}
+
+int LCD_ReceiveFrame(uint8_t *buffer, uint16_t length, uint32_t timeout, uint8_t retries)
+{
+	HAL_StatusTypeDef rx_status;
+
+	for (uint8_t attempt = 0; attempt <= retries; attempt++) {
+		memset(buffer, 0, length);
+		rx_status = HAL_UART_Receive(LCD_USART, buffer, length, timeout);
+		if (rx_status == HAL_OK && LCD_IsValidFrame(buffer, length)) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 void InitLCD(void){	//LCD 초기화
 	HAL_Delay(1000);
 	DisplayFirstPage();
@@ -291,6 +319,10 @@ void DisplayVacuumGraph(int number, int color){
 //LCD 수신
 void LCD_Process(){
     int iValue;
+	if (!LCD_IsValidFrame(LCD_rx_data, 9)) {
+		ReadLCD();
+		return;
+	}
     switch(LCD_rx_data[4]) {
         case 0x00 :    //button
             LCD_Function_Process(LCD_rx_data[5], LCD_rx_data[8]);
@@ -5071,17 +5103,20 @@ void DisplaySterilantData(){
 	DisplayIcon(0x02, 0x90, (CurrentRFIDData.volume/2)%10);
 }
 
-void ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week, unsigned char *hour, unsigned char *minute, unsigned char *second){
+int ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week, unsigned char *hour, unsigned char *minute, unsigned char *second){
 	//RTC
 	const unsigned char rtc_date_get[6] = {0x5A, 0xA5, 0x03, 0x81, 0x20, 0x04};
 	const unsigned char rtc_time_get[6] = {0x5A, 0xA5, 0x03, 0x81, 0x24, 0x03};
+	int result = 0;
 
 	__disable_irq();
     huart1.RxState= HAL_UART_STATE_READY;
     memset(LCD_rx_data, 0, 30);
 
     HAL_UART_Transmit(LCD_USART, (uint8_t*)rtc_date_get, 6, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 10, 10);
+    if (!LCD_ReceiveFrame(LCD_rx_data, 10, 10, 1)) {
+    	goto read_rtc_done;
+    }
     *year = LCD_rx_data[6];
     *month = LCD_rx_data[7];
     *day = LCD_rx_data[8];
@@ -5089,20 +5124,27 @@ void ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsi
 
     memset(LCD_rx_data, 0, 30);
     HAL_UART_Transmit(LCD_USART, (uint8_t*)rtc_time_get, 6, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 9, 10);
+    if (!LCD_ReceiveFrame(LCD_rx_data, 9, 10, 1)) {
+    	goto read_rtc_done;
+    }
     *hour = LCD_rx_data[6];
     *minute = LCD_rx_data[7];
     *second = LCD_rx_data[8];
+    result = 1;
 
+read_rtc_done:
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();
+    return result;
 }
 
 void SetRTCFromLCD(){
     RTC_TimeTypeDef sTime = {0};
     RTC_DateTypeDef sDate = {0};
-    ReadRTC(&sDate.Year, &sDate.Month, &sDate.Date, &sDate.WeekDay, &sTime.Hours, &sTime.Minutes, &sTime.Seconds);
+    if (!ReadRTC(&sDate.Year, &sDate.Month, &sDate.Date, &sDate.WeekDay, &sTime.Hours, &sTime.Minutes, &sTime.Seconds)) {
+    	return;
+    }
 
     sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
     sTime.StoreOperation = RTC_STOREOPERATION_RESET;
@@ -5153,7 +5195,9 @@ void ReadInforDataFromLCD(){
 
 	get_lcd_data[5]=0x40;//SERIAL NUMBER
     HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-    HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+    if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+    	goto read_info_done;
+    }
 
     memset(flash_FACILITY_NAME,0,10);
     for(int i=0;i<10;i++){
@@ -5167,7 +5211,9 @@ void ReadInforDataFromLCD(){
 	memset(LCD_rx_data, 0, 30);
     get_lcd_data[5]=0x50;//FACILITY
 	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-	HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+	if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+		goto read_info_done;
+	}
 
 	memset(flash_FACILITY_NAME,0,10);
     for(int i=0;i<10;i++){
@@ -5181,7 +5227,9 @@ void ReadInforDataFromLCD(){
 	memset(LCD_rx_data, 0, 30);
     get_lcd_data[5]=0x60;//DEPARTMENT
 	HAL_UART_Transmit(LCD_USART, (uint8_t*)get_lcd_data, 7, 10);
-	HAL_UART_Receive(LCD_USART, (uint8_t*)LCD_rx_data, 17, 10);
+	if (!LCD_ReceiveFrame(LCD_rx_data, 17, 10, 1)) {
+		goto read_info_done;
+	}
 
 	memset(flash_DEPARTMENT_NAME,0,10);
     for(int i=0;i<10;i++){
@@ -5192,6 +5240,7 @@ void ReadInforDataFromLCD(){
     		flash_DEPARTMENT_NAME[i]=LCD_rx_data[i+7];
     	}
     }
+read_info_done:
     UART_Receive_Flag = 0;
     __enable_irq();
     ReadLCD();

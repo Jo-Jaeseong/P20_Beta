@@ -283,13 +283,15 @@ void DisplayPage8Char(int page ,int index, char *msg);
 void DisplayPage10Char(int page ,int index, char *msg);
 void DisplayPage20Char(int page ,int index, char *msg);
 
+int LCD_ReceiveFrame(uint8_t *buffer, uint16_t length, uint32_t timeout, uint8_t retries);
+
 
 //GET_TIME&DATA
 void GetTime();
 
 
 //RTC
-void ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week,
+int ReadRTC(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week,
 				unsigned char *hour, unsigned char *minute, unsigned char *second);
 void SetRTCFromLCD();
 void Get_RTC_Time(unsigned char *year, unsigned char *month, unsigned char *day, unsigned char *week,
