@@ -851,7 +851,7 @@ void ShortCycle(){
 	CycleData[2][4].PartsSetting=VAPORIZER;
 	CycleData[2][4].Time=30;
 	CycleData[2][5].PartsSetting=VAPORIZER;
-	CycleData[2][5].Time=7;
+	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[2][6].Time=30;
 	CycleData[2][7].PartsSetting=VAPORIZER;
@@ -901,7 +901,7 @@ void ShortCycle(){
 	CycleData[4][4].PartsSetting=VAPORIZER;
 	CycleData[4][4].Time=30;
 	CycleData[4][5].PartsSetting=VAPORIZER;
-	CycleData[4][5].Time=7;
+	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][6].Time=30;
 	CycleData[4][7].PartsSetting=VAPORIZER;
@@ -1000,7 +1000,7 @@ void StandardCycle(){
 	CycleData[2][4].PartsSetting=VAPORIZER;
 	CycleData[2][4].Time=60;
 	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][5].Time=7;
+	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=VAPORIZER;
 	CycleData[2][6].Time=29;
 	CycleData[2][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
@@ -1052,7 +1052,7 @@ void StandardCycle(){
 	CycleData[4][4].PartsSetting=VAPORIZER;
 	CycleData[4][4].Time=60;
 	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][5].Time=7;
+	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=VAPORIZER;
 	CycleData[4][6].Time=29;
 	CycleData[4][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
@@ -1151,7 +1151,7 @@ void AdvancedCycle(){
 	CycleData[2][4].PartsSetting=VAPORIZER;
 	CycleData[2][4].Time=60;
 	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][5].Time=7;
+	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=VAPORIZER;
 	CycleData[2][6].Time=119;
 	CycleData[2][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
@@ -1203,7 +1203,7 @@ void AdvancedCycle(){
 	CycleData[4][4].PartsSetting=VAPORIZER;
 	CycleData[4][4].Time=60;
 	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][5].Time=7;
+	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=VAPORIZER;
 	CycleData[4][6].Time=119;
 	CycleData[4][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
