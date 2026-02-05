@@ -180,6 +180,29 @@ unsigned char flash_ProcessPowerOffFlag;
 
 //-----------------------------------------------------------------------------------------------------------------------//
 
+static unsigned char NormalizeFlag(unsigned char value, unsigned char default_value){
+	if(value==1 || value==2){
+		return value;
+	}
+	if(value==0 || value==0xFF){
+		return default_value;
+	}
+	return default_value;
+}
+
+static unsigned char NormalizeByteValue(unsigned char value, unsigned char default_value){
+	if(value==0 || value==0xFF){
+		return default_value;
+	}
+	return value;
+}
+
+static unsigned int NormalizeWordValue(unsigned char high, unsigned char low, unsigned int default_value){
+	if((high==0 && low==0) || (high==0xFF && low==0xFF)){
+		return default_value;
+	}
+	return (high*100)+low;
+}
 
 void Write_Flash(){
 	DisplayPage(LCD_LOADING_PAGE);
@@ -412,10 +435,7 @@ void Read_Flash(){
 	}
 
 	/* 장비 */
-	Device_First_Boot=userdata[DEVICE_BOOTFLAG_DATA];
-	if(Device_First_Boot==0){
-		Device_First_Boot=1;
-	}
+	Device_First_Boot=NormalizeFlag(userdata[DEVICE_BOOTFLAG_DATA],1);
 
 	/*장비 정보*///(70)
 	for(int i=0;i<10;i++){
@@ -440,27 +460,13 @@ void Read_Flash(){
 		ActiveModeTime[0][i]=userdata[ACTIVETIME_DATA+i];
 		ActiveModeTime[1][i]=userdata[ACTIVETIME_DATA+i+7];
 	}
-	if(ActiveWeekday[1]==0){
-		ActiveWeekday[1]=1;
-	}
-	if(ActiveWeekday[2]==0){
-		ActiveWeekday[2]=1;
-	}
-	if(ActiveWeekday[3]==0){
-		ActiveWeekday[3]=1;
-	}
-	if(ActiveWeekday[4]==0){
-		ActiveWeekday[4]=1;
-	}
-	if(ActiveWeekday[5]==0){
-		ActiveWeekday[5]=1;
-	}
-	if(ActiveWeekday[6]==0){
-		ActiveWeekday[6]=2;
-	}
-	if(ActiveWeekday[0]==0){
-		ActiveWeekday[0]=2;
-	}
+	ActiveWeekday[1]=NormalizeFlag(ActiveWeekday[1],1);
+	ActiveWeekday[2]=NormalizeFlag(ActiveWeekday[2],1);
+	ActiveWeekday[3]=NormalizeFlag(ActiveWeekday[3],1);
+	ActiveWeekday[4]=NormalizeFlag(ActiveWeekday[4],1);
+	ActiveWeekday[5]=NormalizeFlag(ActiveWeekday[5],1);
+	ActiveWeekday[6]=NormalizeFlag(ActiveWeekday[6],2);
+	ActiveWeekday[0]=NormalizeFlag(ActiveWeekday[0],2);
 	for(int i=0;i<7;i++){
 		if(ActiveModeTime[1][i]==0){
 			ActiveModeTime[1][i]=24;
@@ -468,10 +474,7 @@ void Read_Flash(){
 	}
 
 	/*자동 로그인*/
-	AutoLoginFlag=userdata[AUTO_LOGINFLAG_DATA];
-	if(AutoLoginFlag==0){
-		AutoLoginFlag=2;
-	}
+	AutoLoginFlag=NormalizeFlag(userdata[AUTO_LOGINFLAG_DATA],2);
 	AutoLoginID=userdata[AUTO_LOGINID_DATA];
 
 
@@ -502,155 +505,68 @@ void Read_Flash(){
 	*/
 
 	for(int i=0;i<15;i++){
-		AlarmCheckFlag[i]=userdata[ALARMCHECKFLAG_DATA+i];
-		if(AlarmCheckFlag[i]==0){
-			AlarmCheckFlag[i]=1;
-		}
-		ErrorCheckFlag[i]=userdata[ERRORCHECKFLAG_DATA+i];
-		if(ErrorCheckFlag[i]==0){
-			ErrorCheckFlag[i]=1;
-		}
+		AlarmCheckFlag[i]=NormalizeFlag(userdata[ALARMCHECKFLAG_DATA+i],1);
+		ErrorCheckFlag[i]=NormalizeFlag(userdata[ERRORCHECKFLAG_DATA+i],1);
 	}
 
-	reservationFlag=userdata[RESERVATIONFLAG_DATA];
-	if(reservationFlag==0){
-		reservationFlag=2;
-	}
+	reservationFlag=NormalizeFlag(userdata[RESERVATIONFLAG_DATA],2);
 
-	autoprintFlag=userdata[AUTOPRINTFLAG_DATA];
-	if(autoprintFlag==0){
-		autoprintFlag=1;
-	}
+	autoprintFlag=NormalizeFlag(userdata[AUTOPRINTFLAG_DATA],1);
 	printcopy=userdata[PRINTCOPY_DATA];
 	if(printcopy==0){
 		printcopy=1;
 	}
-	printdataFlag=userdata[PRINTDATAFLAG_DATA];
-	if(printdataFlag==0){
-		printdataFlag=1;
-	}
+	printdataFlag=NormalizeFlag(userdata[PRINTDATAFLAG_DATA],1);
 
-	printgraphFlag=userdata[PRINTGRAPHFLAG_DATA];
-	if(printgraphFlag==0){
-		printgraphFlag=1;
-	}
+	printgraphFlag=NormalizeFlag(userdata[PRINTGRAPHFLAG_DATA],1);
 
 	//온도세팅 저장
-	DoorSettingTemp[0]=userdata[DOORSETTINGTEMP_DATA];
-	DoorSettingTemp[1]=userdata[DOORSETTINGTEMP_DATA+1];
-	DoorSettingTemp[2]=userdata[DOORSETTINGTEMP_DATA+2];
-	ChamberSettingTemp[0]=userdata[CHAMBERSETTINGTEMP_DATA];
-	ChamberSettingTemp[1]=userdata[CHAMBERSETTINGTEMP_DATA+1];
-	ChamberSettingTemp[2]=userdata[CHAMBERSETTINGTEMP_DATA+2];
-	ChamberBackSettingTemp[0]=userdata[CHAMBERBACKSETTINGTEMP_DATA];
-	ChamberBackSettingTemp[1]=userdata[CHAMBERBACKSETTINGTEMP_DATA+1];
-	ChamberBackSettingTemp[2]=userdata[CHAMBERBACKSETTINGTEMP_DATA+2];
-	VaporizerSettingTemp[0]=userdata[VAPORIZERSETTINGTEMP_DATA];
-	VaporizerSettingTemp[1]=userdata[VAPORIZERSETTINGTEMP_DATA+1];
-	VaporizerSettingTemp[2]=userdata[VAPORIZERSETTINGTEMP_DATA+2];
-	if(DoorSettingTemp[0]==0){
-		DoorSettingTemp[0]=58;
-	}
-	if(DoorSettingTemp[1]==0){
-		DoorSettingTemp[1]=58;
-	}
-	if(ChamberSettingTemp[0]==0){
-		ChamberSettingTemp[0]=58;
-	}
-	if(ChamberSettingTemp[1]==0){
-		ChamberSettingTemp[1]=58;
-	}
-	if(ChamberBackSettingTemp[0]==0){
-		ChamberBackSettingTemp[0]=58;
-	}
-	if(ChamberBackSettingTemp[1]==0){
-		ChamberBackSettingTemp[1]=58;
-	}
-	if(VaporizerSettingTemp[0]==0){
-		VaporizerSettingTemp[0]=80;
-	}
-	if(VaporizerSettingTemp[1]==0){
-		VaporizerSettingTemp[1]=130;
-	}
+	DoorSettingTemp[0]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA],58);
+	DoorSettingTemp[1]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+1],58);
+	DoorSettingTemp[2]=NormalizeByteValue(userdata[DOORSETTINGTEMP_DATA+2],20);
+	ChamberSettingTemp[0]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA],58);
+	ChamberSettingTemp[1]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+1],58);
+	ChamberSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERSETTINGTEMP_DATA+2],20);
+	ChamberBackSettingTemp[0]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA],58);
+	ChamberBackSettingTemp[1]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+1],58);
+	ChamberBackSettingTemp[2]=NormalizeByteValue(userdata[CHAMBERBACKSETTINGTEMP_DATA+2],20);
+	VaporizerSettingTemp[0]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA],80);
+	VaporizerSettingTemp[1]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+1],130);
+	VaporizerSettingTemp[2]=NormalizeByteValue(userdata[VAPORIZERSETTINGTEMP_DATA+2],20);
 
 	//진공조건 저장
-	PreesureCondition[0]=userdata[PRESSURECONDITION_DATA];
-	PreesureCondition[1]=userdata[PRESSURECONDITION_DATA+1];
-	PreesureCondition[2]=userdata[PRESSURECONDITION_DATA+2];
-
-	if(PreesureCondition[0]==0){
-			PreesureCondition[0]=70;
-	}
-	if(PreesureCondition[1]==0){
-			PreesureCondition[1]=25;
-	}
-	if(PreesureCondition[2]==0){
-			PreesureCondition[2]=30;
-	}
+	PreesureCondition[0]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA],70);
+	PreesureCondition[1]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+1],25);
+	PreesureCondition[2]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+2],20);
 
 	//페리 스피드 저장
-	perispeed=userdata[PERISPEED_DATA];
-	if(perispeed==0){
-		perispeed=6;
-	}
+	perispeed=NormalizeByteValue(userdata[PERISPEED_DATA],8);
 
 	//캘리브레이션 데이터 저장
-	CalibrationTemp[0]=userdata[CALIBRATIONTEMP_DATA];
-	CalibrationTemp[1]=userdata[CALIBRATIONTEMP_DATA+1];
-	CalibrationTemp[2]=userdata[CALIBRATIONTEMP_DATA+2];
-	CalibrationTemp[3]=userdata[CALIBRATIONTEMP_DATA+3];
-	if(CalibrationTemp[0]==0){
-		CalibrationTemp[0]=20;
-	}
-	if(CalibrationTemp[1]==0){
-		CalibrationTemp[1]=20;
-	}
-	if(CalibrationTemp[2]==0){
-		CalibrationTemp[2]=20;
-	}
-	if(CalibrationTemp[3]==0){
-		CalibrationTemp[3]=20;
-	}
-	CalibrationVacuum=userdata[CALIBRATIONVACUUM_DATA];
-	if(CalibrationVacuum==0){
-		CalibrationVacuum=10;
-	}
+	CalibrationTemp[0]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA],20);
+	CalibrationTemp[1]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA+1],20);
+	CalibrationTemp[2]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA+2],20);
+	CalibrationTemp[3]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA+3],20);
+	CalibrationVacuum=NormalizeByteValue(userdata[CALIBRATIONVACUUM_DATA],10);
 
 
 	//셀프 테스트 벨류 및 오차 저장
-	TestVacuumValue=userdata[TESTVACUUMVALUE_DATA];
-	if(TestVacuumValue==0){
-		TestVacuumValue=10;
-	}
-	TestLeakValue=userdata[TESTLEAKVALUE_DATA];
-	if(TestLeakValue==0){
-		TestLeakValue=2;
-	}
-	TestTempErrorValue=userdata[TESTTEMPERRORVALUE_DATA];
-	if(TestTempErrorValue==0){
-		TestTempErrorValue=3;
-	}
+	TestVacuumValue=NormalizeByteValue(userdata[TESTVACUUMVALUE_DATA],10);
+	TestLeakValue=NormalizeByteValue(userdata[TESTLEAKVALUE_DATA],2);
+	TestTempErrorValue=NormalizeByteValue(userdata[TESTTEMPERRORVALUE_DATA],3);
 
 	//과수 기한 설정
-	expiry_date1=userdata[EXPIRY_DATE1_DATA];
-	if(expiry_date1==0){
-		expiry_date1=12;
-	}
-	expiry_date2=userdata[EXPIRY_DATE2_DATA];
-	if(expiry_date2==0){
-		expiry_date2=2;
-	}
+	expiry_date1=NormalizeByteValue(userdata[EXPIRY_DATE1_DATA],12);
+	expiry_date2=NormalizeByteValue(userdata[EXPIRY_DATE2_DATA],2);
 
 	//도어 오픈 압력 설정
-	DoorOpenPressure=(userdata[DOOROPENPRESSURE_DATA]*100)+(userdata[DOOROPENPRESSURE_DATA+1]);
-	if(DoorOpenPressure==0){
-		DoorOpenPressure=720;
-	}
+	DoorOpenPressure=NormalizeWordValue(userdata[DOOROPENPRESSURE_DATA],userdata[DOOROPENPRESSURE_DATA+1],720);
 
 
 	/*PM 정보*///(22)
 	//사용 횟수 카운트
 	totalCount=(userdata[TOTALCOUNT_DATA]*100)+(userdata[TOTALCOUNT_DATA+1]);
+	//totalCount=NormalizeWordValue(userdata[TOTALCOUNT_DATA],userdata[TOTALCOUNT_DATA+1],0);
 	dailyCount=userdata[DAILYCOUNT_DATA];
 	beforeday=userdata[BEFOREDAY_DATA];
 
@@ -696,21 +612,12 @@ void Read_Flash(){
 	HEPAFilter=(userdata[HEPAFILTER]*100)+(userdata[HEPAFILTER+1]);
 	PlasmaAssy=(userdata[PLASMAASSY]*100)+(userdata[PLASMAASSY+1]);
 
-	flash_ProcessPowerOffFlag=userdata[POWEROFF_DATA];
+	flash_ProcessPowerOffFlag=NormalizeFlag(userdata[POWEROFF_DATA],2);
 
 	/*공장 세팅*///(3)
-	LoginFlag=userdata[LOGINFLAG_DATA];
-	if(LoginFlag==0){
-		LoginFlag=2;
-	}
-	MonitorFlag=userdata[MONITORFLAG_DATA];
-	if(MonitorFlag==0){
-		MonitorFlag=1;
-	}
-	LanguageFlag=userdata[LANGUAGE_DATA];
-	if(LanguageFlag==0){
-		LanguageFlag=1;
-	}
+	LoginFlag=NormalizeFlag(userdata[LOGINFLAG_DATA],2);
+	MonitorFlag=NormalizeFlag(userdata[MONITORFLAG_DATA],1);
+	LanguageFlag=NormalizeFlag(userdata[LANGUAGE_DATA],1);
 
 
 
@@ -906,14 +813,14 @@ void TestCycle(){
 #define	PRESSURE3			0xC0
  */
 void ShortCycle(){
-	CycleData[1][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
+	CycleData[1][1].PartsSetting=VACUUMVALVE;
 	CycleData[1][1].Time=3;
 	CycleData[1][2].PartsSetting=VACUUMVALVE;
-	CycleData[1][2].Time=28;
+	CycleData[1][2].Time=27;
 	CycleData[1][3].PartsSetting=VACUUMVALVE+PRESSURE1;
 	CycleData[1][3].Time=60;
-	CycleData[1][4].PartsSetting=VENTVALVE+INJECTIONVALVE;
-	CycleData[1][4].Time=6;
+	CycleData[1][4].PartsSetting=VENTVALVE;
+	CycleData[1][4].Time=7;
 	CycleData[1][5].PartsSetting=NONE;
 	CycleData[1][5].Time=23;
 	CycleData[1][6].PartsSetting=NONE;
@@ -944,25 +851,25 @@ void ShortCycle(){
 	CycleData[2][3].Time=30;
 	CycleData[2][4].PartsSetting=VAPORIZER;
 	CycleData[2][4].Time=30;
-	CycleData[2][5].PartsSetting=VAPORIZER;
-	CycleData[2][5].Time=30;
-	CycleData[2][6].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][6].Time=1;
+	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[2][5].Time=1;
+	CycleData[2][6].PartsSetting=VAPORIZER;
+	CycleData[2][6].Time=30;
 	CycleData[2][7].PartsSetting=VAPORIZER;
-	CycleData[2][7].Time=54;
+	CycleData[2][7].Time=44;
 	CycleData[2][8].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[2][8].Time=5;
 	CycleData[2][9].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
 	CycleData[2][9].Time=6;
 	CycleData[2][10].PartsSetting=VAPORIZER;
-	CycleData[2][10].Time=24;
+	CycleData[2][10].Time=34;
 	CycleData[2][11].PartsSetting=VAPORIZER;
 	CycleData[2][11].Time=30;
 	CycleData[2][12].PartsSetting=VAPORIZER;
 	CycleData[2][12].Time=30;
 	CycleData[2][13].PartsSetting=VAPORIZER;
 	CycleData[2][13].Time=26;
-	CycleData[2][14].PartsSetting==VAPORIZER;
+	CycleData[2][14].PartsSetting=VAPORIZER;
 	CycleData[2][14].Time=4;
 
 	CycleData[3][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE+VAPORIZER;
@@ -994,25 +901,25 @@ void ShortCycle(){
 	CycleData[4][3].Time=30;
 	CycleData[4][4].PartsSetting=VAPORIZER;
 	CycleData[4][4].Time=30;
-	CycleData[4][5].PartsSetting=VAPORIZER;
-	CycleData[4][5].Time=30;
-	CycleData[4][6].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][6].Time=1;
+	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[4][5].Time=1;
+	CycleData[4][6].PartsSetting=VAPORIZER;
+	CycleData[4][6].Time=30;
 	CycleData[4][7].PartsSetting=VAPORIZER;
-	CycleData[4][7].Time=54;
+	CycleData[4][7].Time=44;
 	CycleData[4][8].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][8].Time=5;
 	CycleData[4][9].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
 	CycleData[4][9].Time=6;
 	CycleData[4][10].PartsSetting=VAPORIZER;
-	CycleData[4][10].Time=24;
+	CycleData[4][10].Time=34;
 	CycleData[4][11].PartsSetting=VAPORIZER;
 	CycleData[4][11].Time=30;
 	CycleData[4][12].PartsSetting=VAPORIZER;
 	CycleData[4][12].Time=30;
 	CycleData[4][13].PartsSetting=VAPORIZER;
 	CycleData[4][13].Time=26;
-	CycleData[4][14].PartsSetting==VAPORIZER;
+	CycleData[4][14].PartsSetting=VAPORIZER;
 	CycleData[4][14].Time=4;
 
 	CycleData[5][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
@@ -1037,7 +944,7 @@ void ShortCycle(){
 	CycleData[5][10].Time=40;
 
 
-	CycleData[6][1].PartsSetting=VENTVALVE+PLASMA;
+	CycleData[6][1].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA;
 	CycleData[6][1].Time=8;
 	CycleData[6][2].PartsSetting=VACUUMVALVE;
 	CycleData[6][2].Time=44;
@@ -1053,27 +960,27 @@ void ShortCycle(){
 
 
 void StandardCycle(){
-	CycleData[1][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
+	CycleData[1][1].PartsSetting=VACUUMVALVE;
 	CycleData[1][1].Time=3;
 	CycleData[1][2].PartsSetting=VACUUMVALVE;
-	CycleData[1][2].Time=52;
+	CycleData[1][2].Time=53;
 	CycleData[1][3].PartsSetting=VENTVALVE;
-	CycleData[1][3].Time=6;
+	CycleData[1][3].Time=7;
 	CycleData[1][4].PartsSetting=VACUUMVALVE;
-	CycleData[1][4].Time=29;
+	CycleData[1][4].Time=27;
 	CycleData[1][5].PartsSetting=VACUUMVALVE+PRESSURE1;
 	CycleData[1][5].Time=60;
-	CycleData[1][6].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA;
-	CycleData[1][6].Time=6;
+	CycleData[1][6].PartsSetting=VENTVALVE;
+	CycleData[1][6].Time=7;
 	CycleData[1][7].PartsSetting=NONE;
-	CycleData[1][7].Time=24;
+	CycleData[1][7].Time=23;
 	CycleData[1][8].PartsSetting=NONE;
 	CycleData[1][8].Time=30;
 	CycleData[1][9].PartsSetting=VACUUMVALVE;
 	CycleData[1][9].Time=60;
 	CycleData[1][10].PartsSetting=VACUUMVALVE;
 	CycleData[1][10].Time=60;
-	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2;
+	CycleData[1][11].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][11].Time=50;
 	CycleData[1][12].PartsSetting=VACUUMVALVE+PRESSURE2+VAPORIZER;
 	CycleData[1][12].Time=60;
@@ -1092,29 +999,29 @@ void StandardCycle(){
 	CycleData[2][3].PartsSetting=VAPORIZER+PRESSURE3;
 	CycleData[2][3].Time=60;
 	CycleData[2][4].PartsSetting=VAPORIZER;
-	CycleData[2][4].Time=30;
+	CycleData[2][4].Time=60;
 	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=VAPORIZER;
-	CycleData[2][6].Time=84;
-	CycleData[2][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[2][7].Time=5;
-	CycleData[2][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
-	CycleData[2][8].Time=2;
-	CycleData[2][9].PartsSetting=VAPORIZER;
-	CycleData[2][9].Time=118;
-	CycleData[2][10].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][10].Time=5;
+	CycleData[2][6].Time=29;
+	CycleData[2][7].PartsSetting=VAPORIZER;
+	CycleData[2][7].Time=60;
+	CycleData[2][8].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[2][8].Time=5;
+	CycleData[2][9].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[2][9].Time=6;
+	CycleData[2][10].PartsSetting=VAPORIZER;
+	CycleData[2][10].Time=19;
 	CycleData[2][11].PartsSetting=VAPORIZER;
-	CycleData[2][11].Time=18;
+	CycleData[2][11].Time=90;
 	CycleData[2][12].PartsSetting=VAPORIZER;
 	CycleData[2][12].Time=60;
 	CycleData[2][13].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][13].Time=30;
+	CycleData[2][13].Time=23;
 	CycleData[2][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][14].Time=61;
+	CycleData[2][14].Time=60;
 	CycleData[2][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][15].Time=6;
+	CycleData[2][15].Time=7;
 
 	CycleData[3][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE+VAPORIZER;
 	CycleData[3][1].Time=3;
@@ -1144,29 +1051,29 @@ void StandardCycle(){
 	CycleData[4][3].PartsSetting=VAPORIZER+PRESSURE3;
 	CycleData[4][3].Time=60;
 	CycleData[4][4].PartsSetting=VAPORIZER;
-	CycleData[4][4].Time=30;
+	CycleData[4][4].Time=60;
 	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=VAPORIZER;
-	CycleData[4][6].Time=84;
-	CycleData[4][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
-	CycleData[4][7].Time=5;
-	CycleData[4][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
-	CycleData[4][8].Time=2;
-	CycleData[4][9].PartsSetting=VAPORIZER;
-	CycleData[4][9].Time=118;
-	CycleData[4][10].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][10].Time=5;
+	CycleData[4][6].Time=29;
+	CycleData[4][7].PartsSetting=VAPORIZER;
+	CycleData[4][7].Time=60;
+	CycleData[4][8].PartsSetting=INJECTIONVALVE+VAPORIZER;
+	CycleData[4][8].Time=5;
+	CycleData[4][9].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[4][9].Time=6;
+	CycleData[4][10].PartsSetting=VAPORIZER;
+	CycleData[4][10].Time=19;
 	CycleData[4][11].PartsSetting=VAPORIZER;
-	CycleData[4][11].Time=18;
+	CycleData[4][11].Time=90;
 	CycleData[4][12].PartsSetting=VAPORIZER;
 	CycleData[4][12].Time=60;
 	CycleData[4][13].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][13].Time=30;
+	CycleData[4][13].Time=23;
 	CycleData[4][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][14].Time=61;
+	CycleData[4][14].Time=60;
 	CycleData[4][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][15].Time=6;
+	CycleData[4][15].Time=7;
 
 	CycleData[5][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
 	CycleData[5][1].Time=3;
@@ -1204,22 +1111,22 @@ void StandardCycle(){
 }
 
 void AdvancedCycle(){
-	CycleData[1][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
-	CycleData[1][1].Time=3;
-	CycleData[1][2].PartsSetting=VACUUMVALVE;
-	CycleData[1][2].Time=60;
-	CycleData[1][3].PartsSetting=VENTVALVE;
-	CycleData[1][3].Time=6;
-	CycleData[1][4].PartsSetting=VACUUMVALVE;
-	CycleData[1][4].Time=79;
-	CycleData[1][5].PartsSetting=VENTVALVE;
-	CycleData[1][5].Time=6;
-	CycleData[1][6].PartsSetting=VACUUMVALVE+PRESSURE1;
-	CycleData[1][6].Time=120;
-	CycleData[1][7].PartsSetting=VENTVALVE+INJECTIONVALVE;
-	CycleData[1][7].Time=6;
+	CycleData[1][1].PartsSetting=VACUUMVALVE;
+	CycleData[1][1].Time=62;
+	CycleData[1][2].PartsSetting=VENTVALVE;
+	CycleData[1][2].Time=7;
+	CycleData[1][3].PartsSetting=VACUUMVALVE;
+	CycleData[1][3].Time=76;
+	CycleData[1][4].PartsSetting=VENTVALVE;
+	CycleData[1][4].Time=7;
+	CycleData[1][5].PartsSetting=VACUUMVALVE+PRESSURE1;
+	CycleData[1][5].Time=120;
+	CycleData[1][6].PartsSetting=VENTVALVE;
+	CycleData[1][6].Time=8;
+	CycleData[1][7].PartsSetting=NONE;
+	CycleData[1][7].Time=20;
 	CycleData[1][8].PartsSetting=NONE;
-	CycleData[1][8].Time=80;
+	CycleData[1][8].Time=60;
 	CycleData[1][9].PartsSetting=NONE;
 	CycleData[1][9].Time=120;
 	CycleData[1][10].PartsSetting=VACUUMVALVE;
@@ -1247,25 +1154,25 @@ void AdvancedCycle(){
 	CycleData[2][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[2][5].Time=1;
 	CycleData[2][6].PartsSetting=VAPORIZER;
-	CycleData[2][6].Time=84;
+	CycleData[2][6].Time=119;
 	CycleData[2][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[2][7].Time=5;
 	CycleData[2][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
-	CycleData[2][8].Time=2;
+	CycleData[2][8].Time=6;
 	CycleData[2][9].PartsSetting=VAPORIZER;
-	CycleData[2][9].Time=149;
-	CycleData[2][10].PartsSetting=VENTVALVE+INJECTIONVALVE+VAPORIZER;
-	CycleData[2][10].Time=4;
+	CycleData[2][9].Time=49;
+	CycleData[2][10].PartsSetting=VAPORIZER;
+	CycleData[2][10].Time=54;
 	CycleData[2][11].PartsSetting=VAPORIZER;
-	CycleData[2][11].Time=52;
+	CycleData[2][11].Time=60;
 	CycleData[2][12].PartsSetting=VAPORIZER;
-	CycleData[2][12].Time=80;
+	CycleData[2][12].Time=60;
 	CycleData[2][13].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][13].Time=37;
-	CycleData[2][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[2][14].Time=60;
-	CycleData[2][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[2][15].Time=6;
+	CycleData[2][13].Time=60;
+	CycleData[2][14].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
+	CycleData[2][14].Time=6;
+	CycleData[2][15].PartsSetting=VAPORIZER;
+	CycleData[2][15].Time=60;
 
 	CycleData[3][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE+VAPORIZER;
 	CycleData[3][1].Time=3;
@@ -1299,25 +1206,25 @@ void AdvancedCycle(){
 	CycleData[4][5].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][5].Time=1;
 	CycleData[4][6].PartsSetting=VAPORIZER;
-	CycleData[4][6].Time=84;
+	CycleData[4][6].Time=119;
 	CycleData[4][7].PartsSetting=INJECTIONVALVE+VAPORIZER;
 	CycleData[4][7].Time=5;
 	CycleData[4][8].PartsSetting=VENTVALVE+INJECTIONVALVE+PLASMA+VAPORIZER;
-	CycleData[4][8].Time=2;
+	CycleData[4][8].Time=6;
 	CycleData[4][9].PartsSetting=VAPORIZER;
-	CycleData[4][9].Time=149;
-	CycleData[4][10].PartsSetting=VENTVALVE+INJECTIONVALVE+VAPORIZER;
-	CycleData[4][10].Time=4;
+	CycleData[4][9].Time=49;
+	CycleData[4][10].PartsSetting=VAPORIZER;
+	CycleData[4][10].Time=54;
 	CycleData[4][11].PartsSetting=VAPORIZER;
-	CycleData[4][11].Time=52;
+	CycleData[4][11].Time=60;
 	CycleData[4][12].PartsSetting=VAPORIZER;
-	CycleData[4][12].Time=80;
+	CycleData[4][12].Time=60;
 	CycleData[4][13].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][13].Time=37;
-	CycleData[4][14].PartsSetting=VACUUMVALVE+VAPORIZER;
-	CycleData[4][14].Time=60;
-	CycleData[4][15].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
-	CycleData[4][15].Time=6;
+	CycleData[4][13].Time=60;
+	CycleData[4][14].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
+	CycleData[4][14].Time=6;
+	CycleData[4][15].PartsSetting=VAPORIZER;
+	CycleData[4][15].Time=60;
 
 	CycleData[5][1].PartsSetting=VACUUMVALVE+INJECTIONVALVE;
 	CycleData[5][1].Time=3;
