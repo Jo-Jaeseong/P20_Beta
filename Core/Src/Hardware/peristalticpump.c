@@ -39,7 +39,7 @@ void PeristalticSpeed(){	// 분당 분사량 조절
 	TIM4->CNT=0;
 	//TIM4->ARR = 20000;
 	if(perispeed==0){
-		perispeed=5;
+		perispeed=8;
 	}
 
 	TIM4->ARR=(550)/perispeed-1;

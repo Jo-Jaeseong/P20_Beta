@@ -537,10 +537,10 @@ void Read_Flash(){
 	//진공조건 저장
 	PreesureCondition[0]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA],70);
 	PreesureCondition[1]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+1],25);
-	PreesureCondition[2]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+2],30);
+	PreesureCondition[2]=NormalizeByteValue(userdata[PRESSURECONDITION_DATA+2],20);
 
 	//페리 스피드 저장
-	perispeed=NormalizeByteValue(userdata[PERISPEED_DATA],6);
+	perispeed=NormalizeByteValue(userdata[PERISPEED_DATA],8);
 
 	//캘리브레이션 데이터 저장
 	CalibrationTemp[0]=NormalizeByteValue(userdata[CALIBRATIONTEMP_DATA],20);
@@ -819,7 +819,7 @@ void ShortCycle(){
 	CycleData[1][2].Time=27;
 	CycleData[1][3].PartsSetting=VACUUMVALVE+PRESSURE1;
 	CycleData[1][3].Time=60;
-	CycleData[1][4].PartsSetting=VENTVALVE+INJECTIONVALVE;
+	CycleData[1][4].PartsSetting=VENTVALVE;
 	CycleData[1][4].Time=7;
 	CycleData[1][5].PartsSetting=NONE;
 	CycleData[1][5].Time=23;
@@ -1221,7 +1221,7 @@ void AdvancedCycle(){
 	CycleData[4][12].Time=60;
 	CycleData[4][13].PartsSetting=VACUUMVALVE+VAPORIZER;
 	CycleData[4][13].Time=60;
-	CycleData[4][14].PartsSetting=INJECTIONVALVE+PLASMA+VAPORIZER;
+	CycleData[4][14].PartsSetting=VENTVALVE+PLASMA+VAPORIZER;
 	CycleData[4][14].Time=6;
 	CycleData[4][15].PartsSetting=VAPORIZER;
 	CycleData[4][15].Time=60;
